@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,18 +27,28 @@ namespace ScreenMonitor
             MemoryStream ms = new MemoryStream();
             using (var tempImage = image.GetThumbnailImage(image.Width, image.Height, () => true, System.IntPtr.Zero))
             {
-                tempImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                var buffer = ms.GetBuffer();
+                //EncoderParameters parameters = new EncoderParameters(1);
+                //parameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
+                //var decoderInfo = ImageCodecInfo.GetImageDecoders().First(ifo => ifo.MimeType == "image/jpeg");
+                tempImage.Save(ms,ImageFormat.Jpeg);
+                var buffer = ms.ToArray();
                 ms.Close();
                 return buffer;
             }
 
         }
 
-        public ScreenShotPackage(Bitmap bmp, int xCount, int yCount)
+        public ScreenShotPackage(Bitmap bmp , int xCount, int yCount,int maxWidth)
         {
             XCount = xCount;
             YCount = yCount;
+            int width = Math.Min(bmp.Width,maxWidth);
+            int height = bmp.Height * width / bmp.Width;
+            Bitmap formatBmp = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(formatBmp);
+            g.InterpolationMode = InterpolationMode.Low;
+            g.DrawImage(bmp, new Rectangle(0, 0, width, height), new Rectangle(0, 0, bmp.Width, bmp.Height), GraphicsUnit.Pixel);
+            g.Dispose();
             ChunksChange = new bool[xCount, yCount];
             ChunksBmp = new Image[xCount, yCount];
             ChunksJpgData = new byte[xCount, yCount][];
@@ -46,11 +58,11 @@ namespace ScreenMonitor
                 {
                     ChunksChange[x, y] = true;
                     Rectangle rect = new Rectangle();
-                    rect.X = bmp.Width / XCount * x;
-                    rect.Y = bmp.Height / YCount * y;
-                    rect.Width = bmp.Width / XCount;
-                    rect.Height = bmp.Height / YCount;
-                    ChunksBmp[x, y] = bmp.Clone(rect, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    rect.X = formatBmp.Width / XCount * x;
+                    rect.Y = formatBmp.Height / YCount * y;
+                    rect.Width = formatBmp.Width / XCount;
+                    rect.Height = formatBmp.Height / YCount;
+                    ChunksBmp[x, y] = formatBmp.Clone(rect, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     ChunksJpgData[x, y] = ToJpgBuffer(ChunksBmp[x, y]);
                 }
             }

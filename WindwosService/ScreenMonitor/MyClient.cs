@@ -7,6 +7,8 @@ using System.Threading;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Diagnostics;
+
 namespace ScreenMonitor
 {
     class MyClient
@@ -60,8 +62,6 @@ namespace ScreenMonitor
                 {
                     byte[] buffer = new byte[256];
                     int readLength = 0;
-
-                    
                     if (ns.CanRead)
                     {
                         readLength += ns.Read(buffer, readLength, buffer.Length);
@@ -104,6 +104,8 @@ namespace ScreenMonitor
                     }
                     else
                         data = screenShot.GetBytes(true); // 没有缓存， 则发送所有数据。
+
+                    
                     writeToNet(data, data.Length, ns);
                     this.Cache = screenShot;
 

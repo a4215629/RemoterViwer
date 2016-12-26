@@ -14,7 +14,7 @@ namespace ScreenMonitor
         #region 获取系统截图
         static ScreenShotPackage cache;
         static DateTime imgTime = new DateTime(1, 1, 1);
-        static int flushTime = 50;
+        static int flushTime = 30;
         static int count = 0;
         public static ScreenShotPackage getScrreenShot()
         {
@@ -27,7 +27,7 @@ namespace ScreenMonitor
                     {
                         graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), Screen.PrimaryScreen.Bounds.Size);
                         imgTime = DateTime.Now;
-                        return cache = new ScreenShotPackage(screenShot, 16, 9);
+                        return cache = new ScreenShotPackage(screenShot, 12, 6, 1280);
 
                     }
                 }
