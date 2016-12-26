@@ -30,3 +30,7 @@ D:\Code\ScreenMonitor\obj\Debug\ScreenMonitor.csprojResolveAssemblyReference.cac
 F:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Debug\ScreenMonitor.exe.config
 F:\Code\RemoterViwer\WindwosService\ScreenMonitor\obj\Debug\ScreenMonitor.exe
 F:\Code\RemoterViwer\WindwosService\ScreenMonitor\obj\Debug\ScreenMonitor.pdb
+F:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Debug\ScreenMonitor.exe
+F:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Debug\ScreenMonitor.pdb
+F:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Debug\MyWindowsAPI.pdb
+F:\Code\RemoterViwer\WindwosService\ScreenMonitor\obj\Debug\ScreenMonitor.csprojResolveAssemblyReference.cache

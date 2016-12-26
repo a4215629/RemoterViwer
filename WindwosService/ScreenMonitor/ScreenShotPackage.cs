@@ -86,8 +86,8 @@ namespace ScreenMonitor
             for (int x = 0; x < XCount; x++)
                 for (int y = 0; y < YCount; y++)
                 {
-                    int p = ((x + 1) * (y + 1) - 1) * 4;
-                    byte[] size = fullData && ChunksChange[x, y] ? BitConverter.GetBytes(ChunksJpgData[x, y].Length) : new byte[] { 0, 0, 0, 0 };
+                    int p = (x * YCount + y) * 4;
+                    byte[] size = fullData || ChunksChange[x, y] ? BitConverter.GetBytes(ChunksJpgData[x, y].Length) : new byte[] { 0, 0, 0, 0 };
                     chunksSizeB[p] = size[0];
                     chunksSizeB[p+1] = size[1];
                     chunksSizeB[p+2] = size[2];
@@ -102,7 +102,7 @@ namespace ScreenMonitor
                     if (fullData || ChunksChange[x, y])
                         ms.Write(ChunksJpgData[x, y], 0, ChunksJpgData[x, y].Length);
 
-            var bytes = ms.GetBuffer();
+            var bytes = ms.ToArray();
             byte[] lengthB = BitConverter.GetBytes(bytes.Length - 4);
             bytes[0] = lengthB[0];
             bytes[1] = lengthB[1];

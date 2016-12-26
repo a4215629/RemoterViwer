@@ -39,8 +39,20 @@ public class ScreenShotPackage {
 		}
 		for (int x = 0; x < XCount; x++) {
 			for (int y = 0; y < YCount; y++){
-				ChunksJpgData[x][y] = Tool.ReadData(stream, ChunksLength[x][y]);
+				ChunksJpgData[x][y] =Tool.ReadData(stream, ChunksLength[x][y]);
 			}
 		}
+	}
+	
+	private boolean compare(byte[] b1,byte[] b2)
+	{
+		if(b1.length != b2.length)
+			return false;
+		for (int x = 0; x < b1.length; x++) {
+			if(b1[x] != b2[x])
+				return false;
+		}
+		return true;
+		
 	}
 }
