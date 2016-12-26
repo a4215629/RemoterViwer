@@ -67,16 +67,16 @@ namespace ScreenMonitor
                 }
             }
         }
-        public void Compare(ScreenShotPackage mpk)
+        public void CompressByBasePackage(ScreenShotPackage basePackage)
         {
-            if (mpk.XCount != XCount || mpk.YCount != YCount)
+            if (basePackage.XCount != XCount || basePackage.YCount != YCount)
                 return;
             for (int x = 0; x < XCount; x++)
             {
                 for (int y = 0; y < YCount; y++)
                 {
 
-                    ChunksChange[x, y] = Convert.ToBase64String(GetJpgDta(x, y)) != Convert.ToBase64String(mpk.GetJpgDta(x, y));
+                    ChunksChange[x, y] = Convert.ToBase64String(GetJpgDta(x, y)) != Convert.ToBase64String(basePackage.GetJpgDta(x, y));
                     if (ChunksChange[x, y] == false)
                         ChunksChange[x, y] = false;
                 }

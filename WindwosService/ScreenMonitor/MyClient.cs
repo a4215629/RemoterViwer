@@ -29,7 +29,6 @@ namespace ScreenMonitor
 
         void Init()
         {
-            
             ns = Client.GetStream();
             ThreadStart stR = new ThreadStart(ReadCommand);
             ThreadStart stS = new ThreadStart(SendDate);
@@ -99,7 +98,7 @@ namespace ScreenMonitor
                     byte[] data = null;
                     if (Cache != null)
                     {
-                        screenShot.Compare(Cache);
+                        screenShot.CompressByBasePackage(Cache);
                         data = screenShot.GetBytes(false);
                     }
                     else
