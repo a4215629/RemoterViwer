@@ -1,0 +1,16 @@
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\bin\Release\ScreenMonitor.exe.config
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\bin\Release\ScreenMonitor.exe
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\bin\Release\ScreenMonitor.pdb
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\bin\Release\MyWindowsAPI.dll
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\bin\Release\MyWindowsAPI.pdb
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\obj\Release\ScreenMonitor.csprojResolveAssemblyReference.cache
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\obj\Release\ScreenMonitor.exe
+D:\Code\CsharpProject\WinForm\ScreenMonitor\ScreenMonitor\obj\Release\ScreenMonitor.pdb
+C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\ScreenMonitor.exe.config
+C:\Users\Tony\Desktop\ScreenMonitor\obj\Release\ScreenMonitor.exe
+C:\Users\Tony\Desktop\ScreenMonitor\obj\Release\ScreenMonitor.pdb
+C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\ScreenMonitor.exe
+C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\ScreenMonitor.pdb
+C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\MyWindowsAPI.dll
+C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\MyWindowsAPI.pdb
+C:\Users\Tony\Desktop\ScreenMonitor\obj\Release\ScreenMonitor.csprojResolveAssemblyReference.cache

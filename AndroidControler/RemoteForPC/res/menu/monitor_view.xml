@@ -1,0 +1,4 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_shutdown" android:visible="true" android:title="@string/action_shutdown" android:checked="true" android:enabled="true"></item>
+
+</menu>
