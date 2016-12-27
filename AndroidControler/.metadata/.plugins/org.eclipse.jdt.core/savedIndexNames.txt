@@ -1,4 +1,0 @@
-INDEX VERSION 1.126+D:\Code\RemoterViwer\AndroidControler\.metadata\.plugins\org.eclipse.jdt.core
-128745466.index
-3988068805.index
-3730417076.index
