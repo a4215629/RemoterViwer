@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Tool {
-	public static byte[] ReadData(InputStream in, int length) throws IOException {
+	public static byte[] readData(InputStream in, int length) throws IOException {
 		byte[] data = new byte[length];
 		int everCount = 100000;
 		int redIndex = 0;

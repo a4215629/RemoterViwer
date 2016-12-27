@@ -6,14 +6,12 @@
     android:gravity ="center"
     tools:context=".MonitorView" >
 
-   
-    <ImageView android:id="@+id/image_video"
+    <ImageView
+        android:id="@+id/image_video"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/black"
         android:layout_gravity="center"
-        android:paddingStart="0px"
-        android:src="@drawable/ic_launcher"
-        />
+        android:background="@drawable/black"
+        android:paddingStart="0px" />
 
 </LinearLayout>

@@ -1,10 +1,8 @@
 package com.example.remoteforpc;
-
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -19,7 +17,10 @@ public class MainActivity extends Activity {
 	EditText txt_IPAddress;
 	EditText txt_port;
 	Button btn_connect;
-	
+	static final int msg_ConnectStart = 1;
+	static final int msg_ConnectSuccess = 2;
+	static final int msg_ConnectFailed = 3;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,95 +34,74 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
-	void initialize()
-	{
-		this.txt_IPAddress = (EditText)findViewById(R.id.txt_IPAddress);
-		this.txt_port =(EditText)findViewById(R.id.txt_port);
-		this.btn_connect =(Button)findViewById(R.id.btn_connect);
+
+	void initialize() {
+		this.txt_IPAddress = (EditText) findViewById(R.id.txt_IPAddress);
+		this.txt_port = (EditText) findViewById(R.id.txt_port);
+		this.btn_connect = (Button) findViewById(R.id.btn_connect);
 		btn_connect.setOnClickListener(new Listener());
 	}
-	
-	final class Listener implements OnClickListener
-	{
+
+	@SuppressLint("HandlerLeak")
+	final class Listener implements OnClickListener {
 
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			new connectThread().start();
 		}
-		
-		final class connectThread extends Thread
-		{
-			@Override
-			public synchronized void run()
-			{
-				try {
-					Bundle data1 = new Bundle();
-					data1.putBoolean("isStart", true);
-					Message msg1 = new Message();
-					msg1.setData(data1);
-					handler.sendMessage(msg1);
-					
-					String IPAddress = txt_IPAddress.getText().toString();
-					int port = Integer.valueOf(txt_port.getText().toString());
-					Socket server = new Socket();
-					InetSocketAddress inet = new InetSocketAddress(IPAddress, port);
-					server.connect(inet , 5000);
-					server.close();
-					
-					Message msg2 = new Message();
-					Bundle data2 = new Bundle();
-					data2.putBoolean("isStart", false);
-					data2.putBoolean("isConnect",true);
-					data2.putString("IPAddress", IPAddress);
-					data2.putInt("port", port);
-					msg2.setData(data2);
-					handler.sendMessage(msg2);
-					
-				} catch (Exception e) {
-					Message msg = new Message();
-					Bundle data = new Bundle();
-					data.putBoolean("isConnect", false);
-					data.putString("exception", e.getMessage());
-					msg.setData(data);
-					handler.sendMessage(msg);
-					e.printStackTrace();
-				}
-			}
-		};
-		Handler handler = new Handler()
-		{
-			@Override
-			public synchronized void  handleMessage (Message msg) {
 
-				Bundle data =msg.getData();
-				if(data.getBoolean("isStart"))
-				{
-					txt_IPAddress.setEnabled(false);
-					txt_port.setEnabled(false);
-					btn_connect.setEnabled(false);
+		final class connectThread extends Thread {
+			@Override
+			public synchronized void run() {
+				Message msg = Message.obtain();
+				msg.what = msg_ConnectStart;
+				handler.sendMessage(msg);
+
+				String IPAddress = txt_IPAddress.getText().toString();
+				int port = Integer.valueOf(txt_port.getText().toString());
+				msg = Message.obtain();
+				if (GlobleAppSetting.SetServer(IPAddress, port)) {
+					msg.what = msg_ConnectSuccess;
+				} else {
+					msg.what = msg_ConnectFailed;
+					msg.obj = "Connect failed";
 				}
-				else
-				{
-					txt_IPAddress.setEnabled(true);
-					txt_port.setEnabled(true);
-					btn_connect.setEnabled(true);
-					if(!data.getBoolean("isConnect"))
-					{
-						new AlertDialog.Builder(MainActivity.this).setTitle("Failed").setMessage(data.getString("exception")).setNegativeButton("OK", null).show();
-					}
-					else
-					{
-						Intent moniter = new Intent(MainActivity.this,MonitorView.class);
-						moniter.putExtras(data);
-						MainActivity.this.startActivity(moniter);
-					}
-				}
-				
+				handler.sendMessage(msg);
 			}
 		};
+
+		Handler handler = new Handler() {
+			@Override
+			public synchronized void handleMessage(Message msg) {
+
+				switch (msg.what) {
+				case msg_ConnectStart:
+					turn_On_Off_input(false);
+					break;
+				case msg_ConnectFailed:
+					turn_On_Off_input(true);
+					new AlertDialog.Builder(MainActivity.this)
+							.setTitle("Failed").setMessage((String) msg.obj)
+							.setNegativeButton("OK", null).show();
+					break;
+				case msg_ConnectSuccess:
+					turn_On_Off_input(true);
+					Intent moniter = new Intent(MainActivity.this,
+							MonitorView.class);
+					MainActivity.this.startActivity(moniter);
+					break;
+				default:
+					break;
+				}
+			}
+		};
+
+		private void turn_On_Off_input(boolean on_off) {
+			txt_IPAddress.setEnabled(on_off);
+			txt_port.setEnabled(on_off);
+			btn_connect.setEnabled(on_off);
+		}
 	}
 
-	
 }

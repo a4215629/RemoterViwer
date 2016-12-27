@@ -4,20 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
-import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -33,9 +27,12 @@ public class MonitorView extends Activity {
 	public static final int THIRTY_TWO_ID = Menu.FIRST + 5;
 	public static final int FORTY_ID = Menu.FIRST + 6;
 	public static final int ONE_ID = Menu.FIRST + 7;
+
+	public static final int msg_receiverData = 1;
+	public static final int msg_exit = 2;
+	private Socket serverSocket = null;
 	ImageView image_video;
 	TextView txt_host;
-	Socket server;
 	Bundle data;
 	Thread update;
 	boolean stopUpdateThread = false;
@@ -43,12 +40,12 @@ public class MonitorView extends Activity {
 	@Override
 	protected synchronized void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTheme(GlobleAppSetting.theme);
 		setContentView(R.layout.activity_monitor_view);
 		data = getIntent().getExtras();
 		image_video = (ImageView) findViewById(R.id.image_video);
 		update = new UpdateImageThread();
 		update.start();
-
 	}
 
 	@Override
@@ -58,37 +55,59 @@ public class MonitorView extends Activity {
 		// this.populateMenu(menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-	final class CommandListener implements DialogInterface.OnClickListener
-	{
+
+	final class CommandListener implements DialogInterface.OnClickListener {
 		String command = "";
-		public CommandListener(String command)
-		{
+
+		public CommandListener(String command) {
 			this.command = command;
 		}
+
 		@Override
 		public void onClick(DialogInterface arg0, int arg1) {
 			// TODO Auto-generated method stub
-			new WriteThread("Shutdown",0,0).start();
+			new WriteThread("Shutdown", 0, 0).start();
 		}
 	}
 
-	
 	// 单击事件
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int itemId = item.getItemId();
-		if(itemId == R.id.menu_shutdown)
-			new AlertDialog.Builder(MonitorView.this).setTitle("Shutdown!").setMessage("Are you sure shutdown this PC?").setPositiveButton("Shutdown",new CommandListener("Shutdown")).setNegativeButton("Cancel",null).show();
+		switch (itemId) {
+		case R.id.menu_shutdown:
+			new AlertDialog.Builder(MonitorView.this)
+					.setTitle("Shutdown!")
+					.setMessage("Are you sure shutdown this PC?")
+					.setPositiveButton("Shutdown",
+							new CommandListener("Shutdown"))
+					.setNegativeButton("Cancel", null).show();
+			break;
+		case R.id.menu_fit_screen:
+			full_Screen();
+		default:
+			break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		 
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+             if(GlobleAppSetting.theme == R.style.FullScreentTheme)
+             {
+            	 full_Screen();
+            	 return false;
+             }
+          }
+          return super.onKeyDown(keyCode, event);
+      }
+	
 	@Override
 	public synchronized void onDestroy() {
-
 		stopUpdateThread = true;
-
 		try {
-			server.close();
+			serverSocket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 		}
@@ -129,6 +148,25 @@ public class MonitorView extends Activity {
 		return super.onTouchEvent(event);
 	}
 
+	private void exit() {
+		stopUpdateThread = true;
+		Message msg = Message.obtain();
+		msg.what = msg_exit;
+		handler.sendMessage(msg);
+	}
+
+	public void full_Screen() {
+		stopUpdateThread = true;
+		GlobleAppSetting.theme = GlobleAppSetting.theme == R.style.AppTheme ? R.style.FullScreentTheme
+				: R.style.AppTheme;
+		Intent intent = getIntent();
+		overridePendingTransition(0, 0);// 不设置进入退出动画
+		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		finish();
+		overridePendingTransition(0, 0);
+		startActivity(intent);
+	}
+
 	final class WriteThread extends Thread {
 		String flags;
 		float x;
@@ -144,7 +182,7 @@ public class MonitorView extends Activity {
 		public synchronized void run() {
 			if (!stopUpdateThread) {
 				try {
-					OutputStream out = server.getOutputStream();
+					OutputStream out = serverSocket.getOutputStream();
 					byte[] buffer = new byte[256];
 					int index = 0;
 					byte f[] = flags.getBytes();
@@ -175,56 +213,50 @@ public class MonitorView extends Activity {
 	final class UpdateImageThread extends Thread {
 		@Override
 		public synchronized void run() {
+			serverSocket = GlobleAppSetting.GetNewServer();
 			while (!stopUpdateThread) {
 				try {
-					if (server == null) {
-						server = new Socket(data.getString("IPAddress"),
-								data.getInt("port"));
-					}
-
-					InputStream in = server.getInputStream();
-					final int arrayLength = Tool.byte2int(Tool.ReadData(in, 4));
-					
-					final byte[] Buffer = Tool.ReadData(in, arrayLength) ;
+					InputStream in = serverSocket.getInputStream();
+					final int arrayLength = Tool.byte2int(Tool.readData(in, 4));
+					final byte[] buffer = Tool.readData(in, arrayLength);
 					Message msg = Message.obtain();
-					Bundle bun = new Bundle();
-					bun.putByteArray("data", Buffer);
-					msg.setData(bun);
+					msg.what = msg_receiverData;
+					msg.obj = buffer;
 					handler.sendMessage(msg);
 
 				} catch (Exception e) {
-					try {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					exit();
 
-						Thread.sleep(100);
-						server.close();
-						server = null;
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
 				}
 			}
 
 		}
 	};
 
-
 	Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			if (!stopUpdateThread) {
-				byte[] buffer = msg.getData().getByteArray("data");
-			
+			if (stopUpdateThread)
+				return;
+			switch (msg.what) {
+			case msg_receiverData:
 				try {
-					ScreenShotPackage sPackage =new ScreenShotPackage(buffer);
+					ScreenShotPackage sPackage = new ScreenShotPackage(
+							(byte[]) msg.obj);
 					image_video.setImageBitmap(sPackage.GetImage());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+				break;
+			case msg_exit:
+				finish();
+				break;
+			default:
+				break;
 			}
-
 		}
 	};
 

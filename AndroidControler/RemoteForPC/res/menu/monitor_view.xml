@@ -1,4 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_shutdown" android:visible="true" android:title="@string/action_shutdown" android:checked="true" android:enabled="true"></item>
 
+    <group android:id="@+id/menu_gorup_monitorView">
+        <item android:id="@+id/menu_shutdown" android:visible="true" android:title="@string/action_shutdown" android:checked="true" android:enabled="true"></item>
+    	<item android:id="@+id/menu_fit_screen" android:title="@string/action_fit_screen" android:enabled="true" android:checked="true" android:visible="true"></item>
+    </group>
 </menu>

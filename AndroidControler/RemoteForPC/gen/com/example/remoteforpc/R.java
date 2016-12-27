@@ -35,7 +35,9 @@ public final class R {
         public static final int btn_connect=0x7f080004;
         public static final int image_video=0x7f080005;
         public static final int lbl_port=0x7f080002;
-        public static final int menu_shutdown=0x7f080006;
+        public static final int menu_fit_screen=0x7f080008;
+        public static final int menu_gorup_monitorView=0x7f080006;
+        public static final int menu_shutdown=0x7f080007;
         public static final int textView1=0x7f080000;
         public static final int txt_IPAddress=0x7f080001;
         public static final int txt_port=0x7f080003;
@@ -49,6 +51,7 @@ public final class R {
         public static final int monitor_view=0x7f070001;
     }
     public static final class string {
+        public static final int action_fit_screen=0x7f05000a;
         public static final int action_shutdown=0x7f050009;
         public static final int app_name=0x7f050000;
         public static final int btn_connect=0x7f050007;
@@ -86,6 +89,13 @@ public final class R {
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f060001;
+        public static final int AppTheme=0x7f060002;
+        /** 
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        
+         */
+        public static final int FullScreentTheme=0x7f060001;
     }
 }

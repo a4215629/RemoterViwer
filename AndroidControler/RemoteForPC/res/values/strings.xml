@@ -4,12 +4,13 @@
     <string name="app_name">RemoteForPC</string>
     <string name="lbl_IPAddress">IP</string>
     <string name="lbl_port">Port</string>
-    <string name="default_IpAddress">192.168.137.2</string>
+    <string name="default_IpAddress">192.168.253.1</string>
     <string name="default_IpAddress1">110.204.247.177</string>
     <string name="default_port">3929</string>
     <string name="title_activity_monitor_view">MonitorView</string>
     <string name="btn_connect">Start</string>
     <string name="title_activity_test">Test</string>
     <string name="action_shutdown">Shutdown This PC</string>
+    <string name="action_fit_screen">Fit on screen</string>
 
 </resources>

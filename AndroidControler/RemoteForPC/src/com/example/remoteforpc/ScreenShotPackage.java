@@ -14,18 +14,18 @@ public class ScreenShotPackage {
     public int YCount;
     public int[][] ChunksLength;
     public byte[][][] ChunksJpgData;
-    private static Bitmap image = null;
+    private static Bitmap baseImage = null;
     
     private void GeneraterImage()
     {
-    	if(image == null)
+    	if(baseImage == null)
     	{
 			byte[] jpg0 =  ChunksJpgData[0][0];
     		Bitmap imgModel = BitmapFactory.decodeByteArray(jpg0, 0, jpg0.length);
-    		image = Bitmap.createBitmap(imgModel.getWidth()*XCount, imgModel.getHeight()*YCount,Bitmap.Config.RGB_565);
+    		baseImage = Bitmap.createBitmap(imgModel.getWidth()*XCount, imgModel.getHeight()*YCount,Bitmap.Config.RGB_565);
     	}
     
-		Canvas canvas = new Canvas(image);
+		Canvas canvas = new Canvas(baseImage);
 		for (int x = 0; x < XCount; x++) {
 			for (int y = 0; y < YCount; y++){
 				if(ChunksLength[x][y]==0)
@@ -44,24 +44,24 @@ public class ScreenShotPackage {
     
 	public ScreenShotPackage(byte[] bytes) throws IOException{
 		InputStream stream = new ByteArrayInputStream(bytes);
-		XCount = Tool.byte2int(Tool.ReadData(stream, 4));
-		YCount = Tool.byte2int(Tool.ReadData(stream, 4));
+		XCount = Tool.byte2int(Tool.readData(stream, 4));
+		YCount = Tool.byte2int(Tool.readData(stream, 4));
 		ChunksJpgData = new byte[XCount][YCount][];
 		ChunksLength = new int[XCount][YCount];
 		for (int x = 0; x < XCount; x++) {
 			for (int y = 0; y < YCount; y++){
-				ChunksLength[x][y] = Tool.byte2int(Tool.ReadData(stream, 4));
+				ChunksLength[x][y] = Tool.byte2int(Tool.readData(stream, 4));
 			}
 		}
 		for (int x = 0; x < XCount; x++) {
 			for (int y = 0; y < YCount; y++){
-				ChunksJpgData[x][y] =Tool.ReadData(stream, ChunksLength[x][y]);
+				ChunksJpgData[x][y] =Tool.readData(stream, ChunksLength[x][y]);
 			}
 		}
 		GeneraterImage();
 	}
 	public Bitmap GetImage()
 	{
-		return image;
+		return baseImage;
 	}
 }
