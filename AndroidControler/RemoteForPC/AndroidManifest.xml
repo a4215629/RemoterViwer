@@ -26,7 +26,7 @@
         <activity
             android:name="com.example.remoteforpc.MonitorView"
             android:label="@string/title_activity_monitor_view" 
-            android:screenOrientation="landscape">
+            android:screenOrientation="sensorLandscape">
         </activity>
     </application>
 
