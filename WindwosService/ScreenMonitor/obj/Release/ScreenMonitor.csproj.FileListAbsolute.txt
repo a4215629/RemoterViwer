@@ -14,3 +14,9 @@ C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\ScreenMonitor.pdb
 C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\MyWindowsAPI.dll
 C:\Users\Tony\Desktop\ScreenMonitor\bin\Release\MyWindowsAPI.pdb
 C:\Users\Tony\Desktop\ScreenMonitor\obj\Release\ScreenMonitor.csprojResolveAssemblyReference.cache
+D:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Release\ScreenMonitor.exe.config
+D:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Release\ScreenMonitor.exe
+D:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Release\ScreenMonitor.pdb
+D:\Code\RemoterViwer\WindwosService\ScreenMonitor\bin\Release\MyWindowsAPI.dll
+D:\Code\RemoterViwer\WindwosService\ScreenMonitor\obj\Release\ScreenMonitor.exe
+D:\Code\RemoterViwer\WindwosService\ScreenMonitor\obj\Release\ScreenMonitor.pdb

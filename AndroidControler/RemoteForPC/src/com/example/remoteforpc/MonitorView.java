@@ -216,24 +216,8 @@ public class MonitorView extends Activity {
 				byte[] buffer = msg.getData().getByteArray("data");
 			
 				try {
-					ScreenShotPackage sPackage = ScreenShotPackage.GeneraterScreenShotPackage(buffer);
-					byte[] jpg0 =  sPackage.ChunksJpgData[0][0];
-					Bitmap imgModel = BitmapFactory.decodeByteArray(jpg0, 0, jpg0.length);
-					Bitmap drawingBoard = Bitmap.createBitmap(imgModel.getWidth()*sPackage.XCount, imgModel.getHeight()*sPackage.YCount,Bitmap.Config.RGB_565);
-					Canvas canvas = new Canvas(drawingBoard);
-					for (int x = 0; x < sPackage.XCount; x++) {
-		    			for (int y = 0; y < sPackage.YCount; y++){
-		    				byte[] blockData = sPackage.ChunksJpgData[x][y];
-		    				Bitmap blockImg = BitmapFactory.decodeByteArray(blockData, 0, blockData.length);
-		    				int sx = blockImg.getWidth()*x;
-		    				int sy =  blockImg.getHeight()*y;
-		    				int w = blockImg.getWidth();
-		    				int h = blockImg.getHeight();
-		    				Rect destRect = new Rect(sx,sy,sx+w,sy+h);  
-		    				canvas.drawBitmap(blockImg,null,destRect,null);
-		    			}
-		    		}
-					image_video.setImageBitmap(drawingBoard);
+					ScreenShotPackage sPackage =new ScreenShotPackage(buffer);
+					image_video.setImageBitmap(sPackage.GetImage());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

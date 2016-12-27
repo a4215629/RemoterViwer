@@ -109,7 +109,7 @@ public class MainActivity extends Activity {
 					btn_connect.setEnabled(true);
 					if(!data.getBoolean("isConnect"))
 					{
-						new AlertDialog.Builder(MainActivity.this).setTitle("提示").setMessage(data.getString("exception")).setNegativeButton("确定", null).show();
+						new AlertDialog.Builder(MainActivity.this).setTitle("Failed").setMessage(data.getString("exception")).setNegativeButton("OK", null).show();
 					}
 					else
 					{
