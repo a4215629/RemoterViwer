@@ -17,7 +17,7 @@ namespace ScreenMonitor
         
         public TcpClient Client;
         NetworkStream ns;
-        public ScreenShotPackage Cache { get; set; }
+        public ScreenShotPackage Cache { get;private set; }
         Thread sendThread = null;
         Thread receiverThread = null;
         public MyClient(TcpClient client)
@@ -89,36 +89,42 @@ namespace ScreenMonitor
             {
                 try
                 {
-                    ScreenShotPackage screenShot = ScreenImageService.getScrreenShot();
-                    if (Cache!= null && Cache.Equals(screenShot))
+                    Bitmap screenShot = ScreenImageService.getScrreenShot();
+                    if (Cache!= null && Cache.Bitmap.Equals(screenShot))
                     {
                         Thread.Sleep(50);
                         continue;
                     }
-                    byte[] data = null;
-                    if (Cache != null)
-                    {
-                        screenShot.CompressByBasePackage(Cache);
-                        data = screenShot.GetBytes(false);
-                    }
-                    else
-                        data = screenShot.GetBytes(true); // 没有缓存， 则发送所有数据。
+                    ScreenShotPackage spakage = new ScreenShotPackage((Bitmap)screenShot.Clone(),1280);
 
-                    
+                    byte[] data = null;
+                    if (Cache != null )
+                    {
+                        //Stopwatch watch = new Stopwatch();watch.Start();
+                        spakage.InitializeSplitting(16, 9);
+                        spakage.CompressByBasePackage(Cache);
+                        //watch.Stop(); Console.WriteLine("合成数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
+                    }
+
+                    data = spakage.GetBytes();
+                    //watch.Stop(); Console.WriteLine("合成数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     writeToNet(data, data.Length, ns);
-                    this.Cache = screenShot;
+                    //watch.Stop(); Console.WriteLine("发送数据: " + watch.ElapsedMilliseconds);
+                    this.Cache = spakage;
+
 
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
                     if (isConnect)
                     {
                         Stop();
                     }
                     return;
                 }
-                Thread.Sleep(30);
+                Thread.Sleep(10);
             }
         }
 
