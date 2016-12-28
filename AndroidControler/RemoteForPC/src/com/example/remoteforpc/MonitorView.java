@@ -238,13 +238,12 @@ public class MonitorView extends Activity {
 	Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			if (stopUpdateThread)
-				return;
 			switch (msg.what) {
 			case msg_receiverData:
 				try {
-					ScreenShotPackage sPackage = new ScreenShotPackage(
-							(byte[]) msg.obj);
+					if (stopUpdateThread)
+						return;
+					ScreenShotPackage sPackage = new ScreenShotPackage((byte[]) msg.obj);
 					image_video.setImageBitmap(sPackage.GetImage());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
