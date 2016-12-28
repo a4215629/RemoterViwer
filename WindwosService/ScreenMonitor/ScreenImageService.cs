@@ -27,7 +27,7 @@ namespace ScreenMonitor
                     {
                         graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), Screen.PrimaryScreen.Bounds.Size);
                         imgTime = DateTime.Now;
-                        return cache = new ScreenShotPackage(screenShot, 12, 7, 1280);
+                        return cache = new ScreenShotPackage(screenShot, 16, 9, 1280);
 
                     }
                 }
