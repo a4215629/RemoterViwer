@@ -89,13 +89,13 @@ namespace ScreenMonitor
             {
                 try
                 {
-                    Bitmap screenShot = ScreenImageService.getScrreenShot();
-                    if (Cache!= null && Cache.Bitmap.Equals(screenShot))
+                    var screenShot = ScreenShot.CurenntScreenShort;
+                    if (Cache!= null && Cache.ScreenShot.Equals(screenShot))
                     {
-                        Thread.Sleep(50);
+                        Thread.Sleep(30);
                         continue;
                     }
-                    ScreenShotPackage spakage = new ScreenShotPackage((Bitmap)screenShot.Clone(),1280);
+                    ScreenShotPackage spakage = new ScreenShotPackage(screenShot,1280);
 
                     byte[] data = null;
                     if (Cache != null )
@@ -105,14 +105,11 @@ namespace ScreenMonitor
                         spakage.CompressByBasePackage(Cache);
                         //watch.Stop(); Console.WriteLine("合成数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     }
-
                     data = spakage.GetBytes();
                     //watch.Stop(); Console.WriteLine("合成数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     writeToNet(data, data.Length, ns);
                     //watch.Stop(); Console.WriteLine("发送数据: " + watch.ElapsedMilliseconds);
                     this.Cache = spakage;
-
-
                 }
                 catch (Exception e)
                 {
@@ -135,8 +132,6 @@ namespace ScreenMonitor
         {
             int writeCount = 10240;
             int indext = 0;
-            //lock (ns)
-            //{
             while (indext < count)
             {
                 int thisWriteLength = (count - indext) > writeCount ? writeCount : count - indext;
@@ -144,9 +139,6 @@ namespace ScreenMonitor
                 indext += thisWriteLength;
             }
             ns.Flush();
-
-            //}
-
         }
     }
 }

@@ -15,8 +15,8 @@ namespace ScreenMonitor
     {
         public const int type_completeImage = 1;
         public const int type_splittingImage = 2;
-
-        public Bitmap Bitmap { get; private set; }
+        
+        public ScreenShot ScreenShot { get; private set; }
         public int SplitXCount { get; private set; }
         public int SplitYCount { get; private set; }
         public bool[,] ChunksChange { get; set; }
@@ -58,15 +58,16 @@ namespace ScreenMonitor
 
         }
 
-        public ScreenShotPackage(Bitmap bmp ,int compressedMaxWidth)
+        public ScreenShotPackage(ScreenShot screenShort ,int compressedMaxWidth)
         {
-            Bitmap = bmp;
-            int width = Math.Min(bmp.Width,compressedMaxWidth);
-            int height = bmp.Height * width / bmp.Width;
+            this.ScreenShot = screenShort;
+            var bitmap = screenShort.bitmap;
+            int width = Math.Min(bitmap.Width,compressedMaxWidth);
+            int height = bitmap.Height * width / bitmap.Width;
             CompressedBmp = new Bitmap(width, height);
             Graphics g = Graphics.FromImage(CompressedBmp);
             g.InterpolationMode = InterpolationMode.Low;
-            g.DrawImage(bmp, new Rectangle(0, 0, width, height), new Rectangle(0, 0, bmp.Width, bmp.Height), GraphicsUnit.Pixel);
+            g.DrawImage(bitmap, new Rectangle(0, 0, width, height), new Rectangle(0, 0, bitmap.Width, bitmap.Height), GraphicsUnit.Pixel);
             g.Dispose();
             IsSplittingCompress = false;
         }
@@ -99,33 +100,19 @@ namespace ScreenMonitor
                 return;
             if (basePackage.SplitXCount != SplitXCount || basePackage.SplitYCount != SplitYCount)
                 return;
+            if (basePackage.ScreenShot.Equals(ScreenShot))
+            {
+                for (int x = 0; x < SplitXCount; x++)
+                    for (int y = 0; y < SplitYCount; y++)
+                        ChunksChange[x, y] = false;
+                return;
+            }
             if (!basePackage.IsSplittingCompress)
                 basePackage.InitializeSplitting(SplitXCount,SplitYCount);
             for (int x = 0; x < SplitXCount; x++)
                 for (int y = 0; y < SplitYCount; y++)
                     ChunksChange[x, y] = Convert.ToBase64String(ChunksJpgData[x, y]) != Convert.ToBase64String(basePackage.ChunksJpgData[x, y]);
             IsSplittingCompress = true;
-        }
-
-        static private bool Equals(Bitmap bmp1, Bitmap bmp2)
-        {
-            if (bmp1.Width != bmp2.Width || bmp1.Height != bmp2.Height)
-                return false;
-            Rectangle rect = new Rectangle(1, 1, bmp1.Width-2, bmp1.Height-2);
-            BitmapData bmpData1 = bmp1.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            BitmapData bmpData2 = bmp2.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            IntPtr ptr1 = bmpData1.Scan0;
-            IntPtr ptr2 = bmpData2.Scan0;
-            byte[] rgbValues1 = new byte[rect.Height * rect.Width * 3];
-            byte[] rgbValues2 = new byte[rect.Height * rect.Width * 3];
-            Marshal.Copy(ptr1, rgbValues1, 0, rgbValues1.Length);
-            Marshal.Copy(ptr2, rgbValues2, 0, rgbValues2.Length);
-            bmp1.UnlockBits(bmpData1);
-            bmp2.UnlockBits(bmpData2);
-            var result = Convert.ToBase64String(rgbValues1) == Convert.ToBase64String(rgbValues2);
-            if (result)
-                Console.WriteLine("Yes");
-            return result;
         }
 
         /// <summary>
@@ -180,7 +167,6 @@ namespace ScreenMonitor
             ms.Close();
             return bytes;
         }
-
         private byte[] GenerateCompressedBytes()
         {
             CompressedJpgData = ToJpgBuffer(CompressedBmp);
