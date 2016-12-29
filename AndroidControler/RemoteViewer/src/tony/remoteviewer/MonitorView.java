@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
-import tony.remoteviewer.R;
-
+import java.util.Date;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,28 +12,26 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MonitorView extends Activity {
 
-	public static final int EIGHT_ID = Menu.FIRST + 1;
-	public static final int SIXTEEN_ID = Menu.FIRST + 2;
-	public static final int TWENTY_FOUR_ID = Menu.FIRST + 3;
-	public static final int TWO_ID = Menu.FIRST + 4;
-	public static final int THIRTY_TWO_ID = Menu.FIRST + 5;
-	public static final int FORTY_ID = Menu.FIRST + 6;
-	public static final int ONE_ID = Menu.FIRST + 7;
 
 	public static final int msg_receiverData = 1;
 	public static final int msg_exit = 2;
 	private Socket serverSocket = null;
 	ImageView image_video;
+	LinearLayout main_layout;
 	TextView txt_host;
 	Bundle data;
 	Thread update;
@@ -43,12 +39,12 @@ public class MonitorView extends Activity {
 
 	@Override
 	protected synchronized void onCreate(Bundle savedInstanceState) {
-
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setTheme(GlobleAppSetting.theme);
 		setContentView(R.layout.activity_monitor_view);
 		super.onCreate(savedInstanceState);
 		data = getIntent().getExtras();
+		main_layout = (LinearLayout)findViewById(R.id.monitor_main_layout);
 		image_video = (ImageView) findViewById(R.id.image_video);
 		update = new UpdateImageThread();
 		update.start();
@@ -121,8 +117,13 @@ public class MonitorView extends Activity {
 
 	}
 
+	static float lastTouchPicX = -1;
+	static float lastTouchPicY = -1;
+	static Date lastTouchDoneTime;
+	static Date lastTouchUpTime;
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		
 		int point[] = new int[4];
 		this.image_video.getLocationInWindow(point);
 		float picX = point[0];
@@ -133,21 +134,32 @@ public class MonitorView extends Activity {
 		switch (event.getAction()) {
 		// ´¥ÃþÆÁÄ»Ê±¿Ì
 		case MotionEvent.ACTION_DOWN:
+			lastTouchDoneTime = new Date();
 			break;
 		// ´¥Ãþ²¢ÒÆ¶¯Ê±¿Ì
 		case MotionEvent.ACTION_MOVE:
 			break;
 		// ÖÕÖ¹´¥ÃþÊ±¿Ì
 		case MotionEvent.ACTION_UP:
+			Date thisTouchUpTime = new Date();
 			float x = event.getX();
 			float y = event.getY();
 			if (x < picX || y < picY)
 				break;
 			if (x > picX + picW || y > picY + picH)
 				break;
-			new WriteThread("LeftClick", (x - picX) / picW, (y - picY) / picH)
-					.start();
-
+			float touchPicX = (x - picX)  / picW;
+			float touchPicY = (y - picY) / picH;
+			
+			if(lastTouchDoneTime !=null && thisTouchUpTime.getTime()-lastTouchDoneTime.getTime() > 500)
+				new WriteThread("RightClick", touchPicX , touchPicY ).start();  //Right click
+			else if(lastTouchUpTime!=null && thisTouchUpTime.getTime()-lastTouchUpTime.getTime() < 300)
+				new WriteThread("LeftClick", lastTouchPicX , lastTouchPicY ).start();  //Double click
+			else
+				new WriteThread("LeftClick", touchPicX , touchPicY ).start();
+			lastTouchPicX = touchPicX;
+			lastTouchPicY = touchPicY;
+			lastTouchUpTime = thisTouchUpTime;
 			break;
 		}
 
@@ -250,7 +262,12 @@ public class MonitorView extends Activity {
 					if (stopUpdateThread)
 						return;
 					ScreenShotPackage sPackage = new ScreenShotPackage((byte[]) msg.obj);
-					image_video.setImageBitmap(sPackage.GetImage());
+					Bitmap picture = sPackage.GetImage();
+					double displayRate = Math.min(main_layout.getWidth()/(float)picture.getWidth(), main_layout.getHeight()/(float)picture.getHeight());
+					double displayWidth = picture.getWidth() * displayRate;
+					double displayHeight = picture.getHeight() * displayRate;
+					Bitmap displayPicture = Bitmap.createScaledBitmap(picture, (int)displayWidth,(int)displayHeight, true);
+					image_video.setImageBitmap(displayPicture);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

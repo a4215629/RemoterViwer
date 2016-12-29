@@ -33,11 +33,12 @@ public final class R {
     }
     public static final class id {
         public static final int btn_connect=0x7f080004;
-        public static final int image_video=0x7f080005;
+        public static final int image_video=0x7f080006;
         public static final int lbl_port=0x7f080002;
-        public static final int menu_fit_screen=0x7f080008;
-        public static final int menu_gorup_monitorView=0x7f080006;
-        public static final int menu_shutdown=0x7f080007;
+        public static final int menu_fit_screen=0x7f080009;
+        public static final int menu_gorup_monitorView=0x7f080007;
+        public static final int menu_shutdown=0x7f080008;
+        public static final int monitor_main_layout=0x7f080005;
         public static final int textView1=0x7f080000;
         public static final int txt_IPAddress=0x7f080001;
         public static final int txt_port=0x7f080003;
