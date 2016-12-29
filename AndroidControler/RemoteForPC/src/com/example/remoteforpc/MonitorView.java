@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Date;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract.Contacts.Data;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.text.format.Time;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -117,8 +121,13 @@ public class MonitorView extends Activity {
 
 	}
 
+	static float lastTouchPicX = -1;
+	static float lastTouchPicY = -1;
+	static Date lastTouchDoneTime;
+	static Date lastTouchUpTime;
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		
 		int point[] = new int[4];
 		this.image_video.getLocationInWindow(point);
 		float picX = point[0];
@@ -129,21 +138,32 @@ public class MonitorView extends Activity {
 		switch (event.getAction()) {
 		// ´¥ÃþÆÁÄ»Ê±¿Ì
 		case MotionEvent.ACTION_DOWN:
+			lastTouchDoneTime = new Date();
 			break;
 		// ´¥Ãþ²¢ÒÆ¶¯Ê±¿Ì
 		case MotionEvent.ACTION_MOVE:
 			break;
 		// ÖÕÖ¹´¥ÃþÊ±¿Ì
 		case MotionEvent.ACTION_UP:
+			Date thisTouchUpTime = new Date();
 			float x = event.getX();
 			float y = event.getY();
 			if (x < picX || y < picY)
 				break;
 			if (x > picX + picW || y > picY + picH)
 				break;
-			new WriteThread("LeftClick", (x - picX) / picW, (y - picY) / picH)
-					.start();
-
+			float touchPicX = (x - picX)  / picW;
+			float touchPicY = (y - picY) / picH;
+			
+			if(lastTouchDoneTime !=null && thisTouchUpTime.getTime()-lastTouchDoneTime.getTime() > 500)
+				new WriteThread("RightClick", touchPicX , touchPicY ).start();  //Right click
+			else if(lastTouchUpTime!=null && thisTouchUpTime.getTime()-lastTouchUpTime.getTime() < 300)
+				new WriteThread("LeftClick", lastTouchPicX , lastTouchPicY ).start();  //Double click
+			else
+				new WriteThread("LeftClick", touchPicX , touchPicY ).start();
+			lastTouchPicX = touchPicX;
+			lastTouchPicY = touchPicY;
+			lastTouchUpTime = thisTouchUpTime;
 			break;
 		}
 
