@@ -11,8 +11,7 @@ namespace ScreenMonitor
 {
     public class Command
     {
-        static int screenWidth = -1;
-        static int screenHeight = -1;
+
         public static Command GeneraterCommand(byte[] objData)
         {
             Command command = new Command();
@@ -21,15 +20,9 @@ namespace ScreenMonitor
             ReadIndex += 24;
             if (command.CommandType == CommandType.LeftClick || command.CommandType == CommandType.RightClick)
             {
-                if (screenWidth == -1 || screenHeight == -1)
-                {
-                    var screenShot = ScreenShot.CurenntScreenShort;
-                    screenWidth = screenShot.bitmap.Width;
-                    screenHeight = screenShot.bitmap.Height;
-                }
-                int xl = (int)(screenWidth * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
+                int xl = (int)(ScreenShot.Width * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
                 ReadIndex += 8;
-                int yl = (int)(screenHeight * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
+                int yl = (int)(ScreenShot.Height * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
                 command.ClickPoint = new Point(xl, yl);
                 ReadIndex += 8;
             }

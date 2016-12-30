@@ -48,14 +48,10 @@ namespace ScreenMonitor
         {
             Graphics graphics = Graphics.FromImage(image);
             MemoryStream ms = new MemoryStream();
-            using (var tempImage = image.GetThumbnailImage(image.Width, image.Height, () => true, System.IntPtr.Zero))
-            {
-                tempImage.Save(ms,ImageFormat.Jpeg);
-                var buffer = ms.ToArray();
-                ms.Close();
-                return buffer;
-            }
-
+            image.Save(ms,ImageFormat.Jpeg);
+            var buffer = ms.ToArray();
+            ms.Close();
+            return buffer;
         }
 
         public ScreenShotPackage(ScreenShot screenShort ,int compressedMaxWidth)

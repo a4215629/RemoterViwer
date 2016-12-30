@@ -29,17 +29,21 @@ namespace ScreenMonitor
                     {
                         if (count++ % 30 == 0)
                             Console.WriteLine(DateTime.Now+" Screenshot: "+ count);
-                        Bitmap screenShot = new Bitmap(Screen.PrimaryScreen.Bounds.Size.Width, Screen.PrimaryScreen.Bounds.Size.Height);
-                        using (Graphics graphics = Graphics.FromImage(screenShot))
-                        {
-                            graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), Screen.PrimaryScreen.Bounds.Size);
-                            imgTime = DateTime.Now;
-                            cache = screenShot;
-                        }
-
+                        CreateScreenShort();
                     }
                     return new ScreenShot((Bitmap)cache.Clone(),cache.GetHashCode());
                 }
+            }
+        }
+
+        private static Bitmap CreateScreenShort()
+        {
+            Bitmap screenShot = new Bitmap(Screen.PrimaryScreen.Bounds.Size.Width, Screen.PrimaryScreen.Bounds.Size.Height);
+            using (Graphics graphics = Graphics.FromImage(screenShot))
+            {
+                graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), Screen.PrimaryScreen.Bounds.Size);
+                imgTime = DateTime.Now;
+                return cache = screenShot;
             }
         }
         
@@ -57,6 +61,8 @@ namespace ScreenMonitor
         {
             return hashCode == 0 ? base.GetHashCode() : hashCode;
         }
+        public static int Width { get { return cache != null ? cache.Width : CreateScreenShort().Width; } }
+        public static int Height { get { return cache != null ? cache.Height : CreateScreenShort().Height; } }
         #endregion
     }
 }
