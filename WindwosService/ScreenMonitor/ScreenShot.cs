@@ -25,11 +25,20 @@ namespace ScreenMonitor
             {
                 lock (lockObj)
                 {
+                    
                     if (cache == null || DateTime.Now > imgTime.AddMilliseconds(flushTime))
                     {
                         if (count++ % 30 == 0)
                             Console.WriteLine(DateTime.Now+" Screenshot: "+ count);
-                        CreateScreenShort();
+                        try
+                        {
+                            CreateScreenShort();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.StackTrace);
+                        }
+
                     }
                     return new ScreenShot((Bitmap)cache.Clone(),cache.GetHashCode());
                 }
