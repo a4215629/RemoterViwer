@@ -114,7 +114,7 @@ namespace ScreenMonitor
                     //watch.Stop(); Console.WriteLine("发送数据包: " + watch.ElapsedMilliseconds);
                     this.Cache = spakage;
                     //tolwatch.Stop(); Console.WriteLine("总共: " + tolwatch.ElapsedMilliseconds);
-                    Console.WriteLine("");
+                    //Console.WriteLine("");
                 }
                 catch (Exception e)
                 {
@@ -129,10 +129,6 @@ namespace ScreenMonitor
                 Thread.Sleep(10);
             }
         }
-
-
-
-
         static void writeToNet(byte[] buffer, int count, NetworkStream ns)
         {
             int writeCount = 10240;

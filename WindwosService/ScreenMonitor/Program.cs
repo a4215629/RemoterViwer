@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System.ServiceProcess;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ScreenMonitor
 {
@@ -16,7 +17,6 @@ namespace ScreenMonitor
       
         static void Main()
         {
-            Stopwatch watch = new Stopwatch(); watch.Start();
             ScreenService screenService = new ScreenService();
             screenService.Start();
         }
