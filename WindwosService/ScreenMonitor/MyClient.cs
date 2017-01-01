@@ -89,27 +89,32 @@ namespace ScreenMonitor
             {
                 try
                 {
+                    //Stopwatch tolwatch = new Stopwatch(); tolwatch.Start();
+                    //Stopwatch watch = new Stopwatch(); watch.Start();
                     var screenShot = ScreenShot.CurenntScreenShort;
                     if (Cache!= null && Cache.ScreenShot.Equals(screenShot))
                     {
                         Thread.Sleep(30);
                         continue;
                     }
+                    //watch.Stop(); Console.WriteLine("获取截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     ScreenShotPackage spakage = new ScreenShotPackage(screenShot,1280);
-
+                    //watch.Stop(); Console.WriteLine("压缩截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     byte[] data = null;
                     if (Cache != null )
                     {
-                        //Stopwatch watch = new Stopwatch();watch.Start();
                         spakage.InitializeSplitting(16, 9);
+                        //watch.Stop(); Console.WriteLine("分块截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                         spakage.CompressByBasePackage(Cache);
-                        //watch.Stop(); Console.WriteLine("合成数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
+                        //watch.Stop(); Console.WriteLine("压缩数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     }
                     data = spakage.GetBytes();
-                    //watch.Stop(); Console.WriteLine("合成数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
+                    //watch.Stop(); Console.WriteLine("合成数据包: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                     writeToNet(data, data.Length, ns);
-                    //watch.Stop(); Console.WriteLine("发送数据: " + watch.ElapsedMilliseconds);
+                    //watch.Stop(); Console.WriteLine("发送数据包: " + watch.ElapsedMilliseconds);
                     this.Cache = spakage;
+                    //tolwatch.Stop(); Console.WriteLine("总共: " + tolwatch.ElapsedMilliseconds);
+                    Console.WriteLine("");
                 }
                 catch (Exception e)
                 {

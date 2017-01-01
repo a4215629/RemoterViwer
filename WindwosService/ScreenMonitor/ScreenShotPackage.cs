@@ -58,11 +58,11 @@ namespace ScreenMonitor
         {
             this.ScreenShot = screenShort;
             var bitmap = screenShort.bitmap;
-            int width = Math.Min(bitmap.Width,compressedMaxWidth);
+            int width = Math.Min(bitmap.Width, compressedMaxWidth);
             int height = bitmap.Height * width / bitmap.Width;
             CompressedBmp = new Bitmap(width, height);
             Graphics g = Graphics.FromImage(CompressedBmp);
-            g.InterpolationMode = InterpolationMode.Low;
+            g.InterpolationMode = InterpolationMode.Default;
             g.DrawImage(bitmap, new Rectangle(0, 0, width, height), new Rectangle(0, 0, bitmap.Width, bitmap.Height), GraphicsUnit.Pixel);
             g.Dispose();
             IsSplittingCompress = false;
@@ -119,12 +119,8 @@ namespace ScreenMonitor
         {
             if (IsSplittingCompress)
             {
-                var sData = GenerateSplittingCompressedBytes();
-                var cDaaa = GenerateCompressedBytes();
-                //Console.WriteLine(sData.Length < cDaaa.Length ? "Splite image":"Completed image");
-                return sData.Length < cDaaa.Length ? sData : cDaaa;
+                return DifferentRate<0.5? GenerateSplittingCompressedBytes() : GenerateCompressedBytes();
             }
-            //Console.WriteLine("Completed image");
             return GenerateCompressedBytes();
         }
         private byte[] GenerateSplittingCompressedBytes()

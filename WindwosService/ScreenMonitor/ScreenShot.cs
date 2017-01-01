@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO.Compression;
+using ScreenMonitor.Tools;
+using System.Diagnostics;
 
 namespace ScreenMonitor
 {
@@ -32,7 +34,7 @@ namespace ScreenMonitor
                             Console.WriteLine(DateTime.Now+" Screenshot: "+ count);
                         try
                         {
-                            CreateScreenShort();
+                            CreateScreenShortGdi();
                         }
                         catch (Exception e)
                         {
@@ -41,6 +43,7 @@ namespace ScreenMonitor
 
                     }
                     return new ScreenShot((Bitmap)cache.Clone(),cache.GetHashCode());
+
                 }
             }
         }
@@ -55,7 +58,11 @@ namespace ScreenMonitor
                 return cache = screenShot;
             }
         }
-        
+        private static Bitmap CreateScreenShortGdi()
+        {
+            return cache = APIWrapper.GetScreenShotGdi();
+        }
+
         private ScreenShot(Bitmap bitmap, int hashCode)
         {
             this.bitmap = bitmap;

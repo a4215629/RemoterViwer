@@ -1,11 +1,11 @@
-﻿using MyWindowsAPI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using ScreenMonitor.Tools;
 
 namespace ScreenMonitor
 {
@@ -38,10 +38,10 @@ namespace ScreenMonitor
             switch (CommandType)
             {
                 case CommandType.LeftClick:
-                    Mouse.Mouse_LeftClick(ClickPoint.X, ClickPoint.Y);
+                    APIWrapper.Mouse_LeftClick(ClickPoint.X, ClickPoint.Y);
                     break;
                 case CommandType.RightClick:
-                    Mouse.Mouse_RightClick(ClickPoint.X, ClickPoint.Y);
+                    APIWrapper.Mouse_RightClick(ClickPoint.X, ClickPoint.Y);
                     break;
                 case CommandType.Shutdown:
                     SystemCMD("shutdown -s -t 0");
