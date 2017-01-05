@@ -34,7 +34,7 @@ namespace ScreenMonitor
                             Console.WriteLine(DateTime.Now+" Screenshot: "+ count);
                         try
                         {
-                            CreateScreenShortGdi();
+                            CreateScreenShort();
                         }
                         catch (Exception e)
                         {

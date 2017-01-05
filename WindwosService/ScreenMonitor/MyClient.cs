@@ -138,8 +138,8 @@ namespace ScreenMonitor
                 int thisWriteLength = (count - indext) > writeCount ? writeCount : count - indext;
                 ns.Write(buffer, indext, thisWriteLength);
                 indext += thisWriteLength;
+                ns.Flush();
             }
-            ns.Flush();
         }
     }
 }
