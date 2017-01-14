@@ -18,7 +18,7 @@ namespace ScreenMonitor
         static Bitmap cache;
         static DateTime imgTime = new DateTime(1, 1, 1);
         static bool run = false;
-        const int flushTime = 40;
+        const int flushTime = 35;
         static int count = 0;
         static object lockObj = new object();
         public Bitmap bitmap { get;private set; }
@@ -94,7 +94,7 @@ namespace ScreenMonitor
                         imgTime = DateTime.Now;
                     }
                     else
-                        Thread.Sleep(10);
+                        Thread.Sleep(5);
                 }
             });
             shotThread.Start();

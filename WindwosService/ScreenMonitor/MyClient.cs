@@ -103,7 +103,7 @@ namespace ScreenMonitor
                     byte[] data = null;
                     if (Cache != null)
                     {
-                        spakage.InitializeSplitting(12, 6);
+                        spakage.InitializeSplitting(16, 9);
                         watch.Stop(); Console.WriteLine("分块截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                         spakage.CompressByBasePackage(Cache);
                         watch.Stop(); Console.WriteLine("压缩数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
