@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.IO.Compression;
 using ScreenMonitor.Tools;
 using System.Diagnostics;
+using System.Threading;
 
 namespace ScreenMonitor
 {
@@ -16,11 +17,13 @@ namespace ScreenMonitor
         #region 获取系统截图
         static Bitmap cache;
         static DateTime imgTime = new DateTime(1, 1, 1);
-        const int flushTime = 30;
+        static bool run = false;
+        const int flushTime = 40;
         static int count = 0;
         static object lockObj = new object();
         public Bitmap bitmap { get;private set; }
         private int hashCode = 0;
+
         public static ScreenShot CurenntScreenShort
         {
             get
@@ -28,7 +31,7 @@ namespace ScreenMonitor
                 lock (lockObj)
                 {
                     
-                    if (cache == null || DateTime.Now > imgTime.AddMilliseconds(flushTime))
+                    if (cache == null)
                     {
                         if (count++ % 30 == 0)
                             Console.WriteLine(DateTime.Now+" Screenshot: "+ count);
@@ -69,6 +72,38 @@ namespace ScreenMonitor
             this.hashCode = hashCode;
         }
 
+
+        public static void StartShot() {
+            if (run)
+                return;
+            run = true;
+            Thread shotThread = new Thread(() =>
+            {
+                while (run)
+                {
+                    if (DateTime.Now > imgTime.AddMilliseconds(flushTime))
+                    {
+                        try
+                        {
+                            CreateScreenShort();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.StackTrace);
+                        }
+                        imgTime = DateTime.Now;
+                    }
+                    else
+                        Thread.Sleep(10);
+                }
+            });
+            shotThread.Start();
+        }
+
+        public static void StopShot()
+        {
+            run = false;
+        }
         public override bool Equals(object obj)
         {
             return GetHashCode() == obj.GetHashCode();

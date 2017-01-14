@@ -1,18 +1,40 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/monitor_main_layout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:gravity ="center"
     tools:context=".MonitorView" >
 
-    <ImageView
-        android:id="@+id/image_video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="#00ffffff"
-        android:paddingStart="0px" />
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="horizontal"
+	    android:gravity ="center"  >
+	        <ImageView
+	        android:id="@+id/image_video"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:contentDescription="Screen"
+	        android:background="#00ffffff"
+	        android:paddingStart="0px" />
+	</LinearLayout>
 
-</LinearLayout>
+	<LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:gravity ="right"  >
+	        <TextView
+	        android:id="@+id/txt_fps"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="10dp"
+	        android:text="FPS:" 
+	        android:textColor="#ff0000"/>
+	</LinearLayout>
+
+
+</FrameLayout>

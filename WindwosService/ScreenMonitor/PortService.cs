@@ -52,7 +52,8 @@ namespace ScreenMonitor
                         continue;
                     MyClient myClient = new MyClient(tcpClient);
                     myClinets.Add(myClient);
-                    myClient.OnStoped += ((obj) => { myClinets.Remove(obj); });
+                    ScreenShot.StartShot();
+                    myClient.OnStoped += ((obj) => {myClinets.Remove(obj); if (myClinets.Count == 0) ScreenShot.StopShot(); });
                     myClient.Start();
                 }
                 catch (Exception e)

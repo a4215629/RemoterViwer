@@ -18,8 +18,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,13 +31,17 @@ public class MonitorView extends Activity {
 
 	public static final int msg_receiverData = 1;
 	public static final int msg_exit = 2;
+	public static final int msg_showTFS = 3;
 	private Socket serverSocket = null;
 	ImageView image_video;
-	LinearLayout main_layout;
-	TextView txt_host;
+	ViewGroup main_layout;
+	TextView txt_fps;
 	Bundle data;
 	Thread update;
+	Thread fpsThread;
 	boolean stopUpdateThread = false;
+	int lastFrames = 0;
+	int cureentFrames = 0;
 
 	@Override
 	protected synchronized void onCreate(Bundle savedInstanceState) {
@@ -44,10 +50,13 @@ public class MonitorView extends Activity {
 		setContentView(R.layout.activity_monitor_view);
 		super.onCreate(savedInstanceState);
 		data = getIntent().getExtras();
-		main_layout = (LinearLayout)findViewById(R.id.monitor_main_layout);
+		main_layout = (ViewGroup)findViewById(R.id.monitor_main_layout);
 		image_video = (ImageView) findViewById(R.id.image_video);
+		txt_fps = (TextView) findViewById(R.id.txt_fps);
 		update = new UpdateImageThread();
+		fpsThread = new TFSCalculateThread();
 		update.start();
+		fpsThread.start();
 	}
 
 	@Override
@@ -252,6 +261,26 @@ public class MonitorView extends Activity {
 
 		}
 	};
+	final class TFSCalculateThread extends Thread {
+		@Override
+		public synchronized void run() {
+			while (!stopUpdateThread) {
+				int tfs = cureentFrames - lastFrames;
+				Message msg = Message.obtain();
+				msg.what = msg_showTFS;
+				lastFrames = cureentFrames; 
+				msg.obj = tfs;
+				handler.sendMessage(msg);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	};
+	
 
 	Handler handler = new Handler() {
 		@Override
@@ -268,6 +297,7 @@ public class MonitorView extends Activity {
 					double displayHeight = picture.getHeight() * displayRate;
 					Bitmap displayPicture = Bitmap.createScaledBitmap(picture, (int)displayWidth,(int)displayHeight, true);
 					image_video.setImageBitmap(displayPicture);
+					cureentFrames++;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -276,6 +306,8 @@ public class MonitorView extends Activity {
 			case msg_exit:
 				finish();
 				break;
+			case msg_showTFS:
+				txt_fps.setText("FPS:"+msg.obj);
 			default:
 				break;
 			}

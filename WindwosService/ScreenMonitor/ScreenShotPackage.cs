@@ -60,6 +60,7 @@ namespace ScreenMonitor
             var bitmap = screenShort.bitmap;
             int width = Math.Min(bitmap.Width, compressedMaxWidth);
             int height = bitmap.Height * width / bitmap.Width;
+
             CompressedBmp = new Bitmap(width, height);
             Graphics g = Graphics.FromImage(CompressedBmp);
             g.InterpolationMode = InterpolationMode.Default;
@@ -141,7 +142,6 @@ namespace ScreenMonitor
                     chunksSizeB[p + 2] = size[2];
                     chunksSizeB[p + 3] = size[3];
                 }
-
             ms.Write(xB, 0, xB.Length);
             ms.Write(yB, 0, yB.Length);
             ms.Write(chunksSizeB, 0, chunksSizeB.Length);
