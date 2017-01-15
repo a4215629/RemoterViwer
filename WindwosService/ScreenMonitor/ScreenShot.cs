@@ -112,8 +112,23 @@ namespace ScreenMonitor
         {
             return hashCode == 0 ? base.GetHashCode() : hashCode;
         }
-        public static int Width { get { return cache != null ? cache.Width : CreateScreenShort().Width; } }
-        public static int Height { get { return cache != null ? cache.Height : CreateScreenShort().Height; } }
+        public static int Width { get
+            {
+                lock (lockObj)
+                {
+                    return cache != null ? cache.Width : CreateScreenShort().Width;
+                }
+
+            } }
+        public static int Height {
+            get
+            {
+                lock (lockObj)
+                {
+                    return cache != null ? cache.Height : CreateScreenShort().Height;
+                }
+            }
+        }
         #endregion
     }
 }

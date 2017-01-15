@@ -143,6 +143,9 @@ public class MonitorView extends Activity {
 
 	static float lastTouchPicX = -1;
 	static float lastTouchPicY = -1;
+	static float lastTouchDownX = -1;
+	static float lastTouchDownY = -1;
+	static boolean isMoving = false;
 	static Date lastTouchDoneTime;
 	static Date lastTouchUpTime;
 	@Override
@@ -154,20 +157,42 @@ public class MonitorView extends Activity {
 		float picY = point[1];
 		int picW = this.image_video.getWidth();
 		int picH = this.image_video.getHeight();
-
+		float x = event.getX();
+		float y = event.getY();
+		float moveIndexX =0;
+		float moveIndexY =0;
 		switch (event.getAction()) {
 		// ´¥ÃþÆÁÄ»Ê±¿Ì
 		case MotionEvent.ACTION_DOWN:
+			isMoving = false;
+			lastTouchDownX = x;
+			lastTouchDownY = y;
 			lastTouchDoneTime = new Date();
 			break;
 		// ´¥Ãþ²¢ÒÆ¶¯Ê±¿Ì
 		case MotionEvent.ACTION_MOVE:
+			moveIndexX = x - lastTouchDownX;
+			moveIndexY = y - lastTouchDownY;
+			if(lastTouchDoneTime !=null && new Date().getTime()-lastTouchDoneTime.getTime() > 200)
+			{
+				new WriteThread("MouseWheel", moveIndexX , moveIndexY ).start();
+				lastTouchDownX = x;
+				lastTouchDownY = y;
+				lastTouchDoneTime = new Date();
+			}
+			isMoving = true;
 			break;
 		// ÖÕÖ¹´¥ÃþÊ±¿Ì
 		case MotionEvent.ACTION_UP:
+			if(isMoving)
+			{	
+				moveIndexX = x - lastTouchDownX;
+				moveIndexY = y - lastTouchDownY;
+				new WriteThread("MouseWheel", moveIndexX , moveIndexY ).start();
+				isMoving = false;
+				break;
+			}
 			Date thisTouchUpTime = new Date();
-			float x = event.getX();
-			float y = event.getY();
 			if (x < picX || y < picY)
 				break;
 			if (x > picX + picW || y > picY + picH)

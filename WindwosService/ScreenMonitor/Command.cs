@@ -26,11 +26,20 @@ namespace ScreenMonitor
                 command.ClickPoint = new Point(xl, yl);
                 ReadIndex += 8;
             }
+            else if (command.CommandType == CommandType.MouseWheel)
+            {
+                command.MouseWhell_X = (int)(10 * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
+                ReadIndex += 8;
+                command.MouseWhell_Y = (int)(10 * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
+                ReadIndex += 8;
+            }
             command.Message = Encoding.UTF8.GetString(objData, ReadIndex, 128).Replace("\0", "");
             return command;
         }
         public CommandType CommandType { get; set; }
         public Point ClickPoint { get; set; } = new Point(0,0);
+        public int MouseWhell_X { get; set; } = 0;
+        public int MouseWhell_Y { get; set; } = 0;
         public string Message { get; set; }
 
         public void Execute()
@@ -42,6 +51,9 @@ namespace ScreenMonitor
                     break;
                 case CommandType.RightClick:
                     APIWrapper.Mouse_RightClick(ClickPoint.X, ClickPoint.Y);
+                    break;
+                case CommandType.MouseWheel:
+                    APIWrapper.Mouse_Wheel(MouseWhell_Y*-1);
                     break;
                 case CommandType.Shutdown:
                     SystemCMD("shutdown -s -t 0");
@@ -72,6 +84,7 @@ namespace ScreenMonitor
     {
         LeftClick,
         RightClick,
+        MouseWheel,
         Shutdown,
         Message
     }

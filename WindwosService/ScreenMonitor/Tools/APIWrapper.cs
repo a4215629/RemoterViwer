@@ -48,6 +48,15 @@ namespace ScreenMonitor.Tools
             WindowsAPI.mouse_event(Mouse_Flags.MOUSEEVENTF_RIGHTDOWN | Mouse_Flags.MOUSEEVENTF_RIGHTUP, pointXInScreen, pointYInScreen, 0, 0);
         }
 
+        /// <summary>
+        /// 鼠标滚轮滚动
+        /// </summary>
+        public static void Mouse_Wheel(int moveIndex)
+        {
+            Console.WriteLine("Move:" + moveIndex);
+            WindowsAPI.mouse_event(Mouse_Flags.MOUSEEVENTF_WHEEL, 0, 0, moveIndex, 0);
+        }
+   
         public static Bitmap GetScreenShotGdi()
         {
             Bitmap destImage = new Bitmap(Screen.AllScreens[0].Bounds.Width, Screen.AllScreens[0].Bounds.Height);
@@ -75,6 +84,7 @@ namespace ScreenMonitor.Tools
         public const int MOUSEEVENTF_RIGHTUP = 0x0010; //模拟鼠标右键抬起 
         public const int MOUSEEVENTF_MIDDLEDOWN = 0x0020;// 模拟鼠标中键按下 
         public const int MOUSEEVENTF_MIDDLEUP = 0x0040; //模拟鼠标中键抬起 
+        public const int MOUSEEVENTF_WHEEL = 0x800;//鼠标滚动
         public const int MOUSEEVENTF_ABSOLUTE = 0x8000; //标示是否采用绝对坐标 
     }
 }
