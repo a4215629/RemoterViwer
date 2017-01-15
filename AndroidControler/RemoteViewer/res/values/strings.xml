@@ -13,5 +13,7 @@
     <string name="action_shutdown">Shutdown This PC</string>
     <string name="action_fit_screen">Fit on screen</string>
     <string name="setting_file">Setting.properties</string>
+    <string name="action_show_fps">Show FPS</string>
+    <string name="action_hide_fps">Hide FPS</string>
 
 </resources>

@@ -13,22 +13,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsoluteLayout;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MonitorView extends Activity {
-
-
 	public static final int msg_receiverData = 1;
 	public static final int msg_exit = 2;
 	public static final int msg_showTFS = 3;
@@ -36,12 +31,16 @@ public class MonitorView extends Activity {
 	ImageView image_video;
 	ViewGroup main_layout;
 	TextView txt_fps;
+	MenuItem menu_show_hide_fps;
 	Bundle data;
 	Thread update;
 	Thread fpsThread;
 	boolean stopUpdateThread = false;
 	int lastFrames = 0;
 	int cureentFrames = 0;
+	int lastReceivedFrames = 0;
+	int cureentReceivedFrames = 0;
+	int queueLength = 0;
 
 	@Override
 	protected synchronized void onCreate(Bundle savedInstanceState) {
@@ -53,6 +52,7 @@ public class MonitorView extends Activity {
 		main_layout = (ViewGroup)findViewById(R.id.monitor_main_layout);
 		image_video = (ImageView) findViewById(R.id.image_video);
 		txt_fps = (TextView) findViewById(R.id.txt_fps);
+		ShowOrHideFPSBySetting();
 		update = new UpdateImageThread();
 		fpsThread = new TFSCalculateThread();
 		update.start();
@@ -63,8 +63,10 @@ public class MonitorView extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.monitor_view, menu);
-		// this.populateMenu(menu);
-		return super.onCreateOptionsMenu(menu);
+		boolean result = super.onCreateOptionsMenu(menu);
+		menu_show_hide_fps = menu.findItem(R.id.menu_show_or_hide_fps);
+		ShowOrHideFPSBySetting();
+		return result;
 	}
 
 	final class CommandListener implements DialogInterface.OnClickListener {
@@ -96,10 +98,22 @@ public class MonitorView extends Activity {
 			break;
 		case R.id.menu_fit_screen:
 			full_Screen();
+			break;
+		case R.id.menu_show_or_hide_fps:
+			GlobleAppSetting.showFPS = !GlobleAppSetting.showFPS;
+			ShowOrHideFPSBySetting();
+			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private void ShowOrHideFPSBySetting()
+	{
+		txt_fps.setVisibility(GlobleAppSetting.showFPS?View.VISIBLE:View.GONE);
+		if(menu_show_hide_fps!=null)
+			menu_show_hide_fps.setTitle(getString(GlobleAppSetting.showFPS?R.string.action_hide_fps:R.string.action_show_fps));
 	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -118,6 +132,7 @@ public class MonitorView extends Activity {
 	public synchronized void onDestroy() {
 		stopUpdateThread = true;
 		try {
+			handler.removeCallbacksAndMessages(null); 
 			serverSocket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -182,7 +197,7 @@ public class MonitorView extends Activity {
 		handler.sendMessage(msg);
 	}
 
-	public void full_Screen() {
+	private void full_Screen() {
 		stopUpdateThread = true;
 		GlobleAppSetting.theme = GlobleAppSetting.theme == R.style.AppTheme ? R.style.FullScreentTheme
 				: R.style.AppTheme;
@@ -246,11 +261,16 @@ public class MonitorView extends Activity {
 					InputStream in = serverSocket.getInputStream();
 					final int arrayLength = Tool.byte2int(Tool.readData(in, 4));
 					final byte[] buffer = Tool.readData(in, arrayLength);
+					
 					Message msg = Message.obtain();
-					msg.what = msg_receiverData;
-					msg.obj = buffer;
-					handler.sendMessage(msg);
-
+					if(queueLength <= 2)
+					{
+						msg.what = msg_receiverData;
+						msg.obj = buffer;
+						handler.sendMessage(msg);
+						queueLength++;
+					}
+					cureentReceivedFrames++;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -266,10 +286,12 @@ public class MonitorView extends Activity {
 		public synchronized void run() {
 			while (!stopUpdateThread) {
 				int tfs = cureentFrames - lastFrames;
+				int rtfs = cureentReceivedFrames - lastReceivedFrames;
+				lastFrames = cureentFrames; 
+				lastReceivedFrames = cureentReceivedFrames;
 				Message msg = Message.obtain();
 				msg.what = msg_showTFS;
-				lastFrames = cureentFrames; 
-				msg.obj = tfs;
+				msg.obj = "RTFS:"+rtfs+" TFS:"+tfs;
 				handler.sendMessage(msg);
 				try {
 					Thread.sleep(1000);
@@ -281,8 +303,7 @@ public class MonitorView extends Activity {
 		}
 	};
 	
-
-	Handler handler = new Handler() {
+	 Handler handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -298,6 +319,7 @@ public class MonitorView extends Activity {
 					Bitmap displayPicture = Bitmap.createScaledBitmap(picture, (int)displayWidth,(int)displayHeight, true);
 					image_video.setImageBitmap(displayPicture);
 					cureentFrames++;
+					queueLength--;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -307,11 +329,12 @@ public class MonitorView extends Activity {
 				finish();
 				break;
 			case msg_showTFS:
-				txt_fps.setText("FPS:"+msg.obj);
+				txt_fps.setText(msg.obj.toString());
 			default:
 				break;
 			}
 		}
+
 	};
 
 }

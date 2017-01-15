@@ -1,13 +1,11 @@
 package tony.remoteviewer;
 import tony.remoteviewer.R;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
@@ -16,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class MainActivity extends Activity {
-
+	boolean destroied = false;
 	EditText txt_IPAddress;
 	EditText txt_port;
 	Button btn_connect;
@@ -36,6 +34,13 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	@Override
+	public synchronized void onDestroy() {
+		destroied = true;
+		handler.removeCallbacksAndMessages(null); 
+		super.onDestroy();
+
 	}
 
 	void initialize() {
@@ -74,39 +79,40 @@ public class MainActivity extends Activity {
 				handler.sendMessage(msg);
 			}
 		};
-
-		Handler handler = new Handler() {
-			@Override
-			public synchronized void handleMessage(Message msg) {
-				switch (msg.what) {
-				case msg_ConnectStart:
-					turn_On_Off_input(false);
-					break;
-				case msg_ConnectFailed:
-					turn_On_Off_input(true);
-					new AlertDialog.Builder(MainActivity.this)
-							.setTitle("Failed").setMessage((String) msg.obj)
-							.setNegativeButton("OK", null).show();
-					break;
-				case msg_ConnectSuccess:
-					Tool.setProperty(MainActivity.this,getString(R.string.lbl_IPAddress), txt_IPAddress.getText().toString());
-					Tool.setProperty(MainActivity.this,getString(R.string.lbl_port), txt_port.getText().toString());
-					turn_On_Off_input(true);
-					Intent moniter = new Intent(MainActivity.this,
-							MonitorView.class);
-					MainActivity.this.startActivity(moniter);
-					break;
-				default:
-					break;
-				}
+	}
+	Handler handler = new Handler() {
+		@Override
+		public synchronized void handleMessage(Message msg) {
+			if(destroied)
+				return;
+			switch (msg.what) {
+			case msg_ConnectStart:
+				turn_On_Off_input(false);
+				break;
+			case msg_ConnectFailed:
+				turn_On_Off_input(true);
+				new AlertDialog.Builder(MainActivity.this)
+						.setTitle("Failed").setMessage((String) msg.obj)
+						.setNegativeButton("OK", null).show();
+				break;
+			case msg_ConnectSuccess:
+				Tool.setProperty(MainActivity.this,getString(R.string.lbl_IPAddress), txt_IPAddress.getText().toString());
+				Tool.setProperty(MainActivity.this,getString(R.string.lbl_port), txt_port.getText().toString());
+				turn_On_Off_input(true);
+				Intent moniter = new Intent(MainActivity.this,
+						MonitorView.class);
+				MainActivity.this.startActivity(moniter);
+				break;
+			default:
+				break;
 			}
-		};
-
-		private void turn_On_Off_input(boolean on_off) {
-			txt_IPAddress.setEnabled(on_off);
-			txt_port.setEnabled(on_off);
-			btn_connect.setEnabled(on_off);
 		}
+	};
+
+	private void turn_On_Off_input(boolean on_off) {
+		txt_IPAddress.setEnabled(on_off);
+		txt_port.setEnabled(on_off);
+		btn_connect.setEnabled(on_off);
 	}
 
 }

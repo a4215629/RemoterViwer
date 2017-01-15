@@ -37,6 +37,7 @@ public final class R {
         public static final int lbl_port=0x7f080002;
         public static final int menu_fit_screen=0x7f08000a;
         public static final int menu_gorup_monitorView=0x7f080008;
+        public static final int menu_show_or_hide_fps=0x7f08000b;
         public static final int menu_shutdown=0x7f080009;
         public static final int monitor_main_layout=0x7f080005;
         public static final int textView1=0x7f080000;
@@ -54,6 +55,8 @@ public final class R {
     }
     public static final class string {
         public static final int action_fit_screen=0x7f05000a;
+        public static final int action_hide_fps=0x7f05000d;
+        public static final int action_show_fps=0x7f05000c;
         public static final int action_shutdown=0x7f050009;
         public static final int app_name=0x7f050000;
         public static final int btn_connect=0x7f050007;

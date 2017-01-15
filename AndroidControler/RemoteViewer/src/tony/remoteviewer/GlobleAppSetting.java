@@ -11,6 +11,7 @@ public class GlobleAppSetting {
 	private static String _iPAddress = null;
 	private static int _port = 0;
 	public static int theme = R.style.AppTheme;
+	public static boolean showFPS = false;
 
 	public static boolean SetServer(String iPAddress, int port) {
 		// TODO Auto-generated method stub
