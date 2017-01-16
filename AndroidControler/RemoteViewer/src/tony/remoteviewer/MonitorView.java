@@ -26,7 +26,7 @@ import android.widget.TextView;
 public class MonitorView extends Activity {
 	public static final int msg_receiverData = 1;
 	public static final int msg_exit = 2;
-	public static final int msg_showTFS = 3;
+	public static final int msg_showFPS = 3;
 	private Socket serverSocket = null;
 	ImageView image_video;
 	ViewGroup main_layout;
@@ -310,13 +310,13 @@ public class MonitorView extends Activity {
 		@Override
 		public synchronized void run() {
 			while (!stopUpdateThread) {
-				int tfs = cureentFrames - lastFrames;
-				int rtfs = cureentReceivedFrames - lastReceivedFrames;
+				int fps = cureentFrames - lastFrames;
+				int rfPs = cureentReceivedFrames - lastReceivedFrames;
 				lastFrames = cureentFrames; 
 				lastReceivedFrames = cureentReceivedFrames;
 				Message msg = Message.obtain();
-				msg.what = msg_showTFS;
-				msg.obj = "RTFS:"+rtfs+" TFS:"+tfs;
+				msg.what = msg_showFPS;
+				msg.obj = "RFPS:"+rfPs+" RFPS:"+fps;
 				handler.sendMessage(msg);
 				try {
 					Thread.sleep(1000);
@@ -353,7 +353,7 @@ public class MonitorView extends Activity {
 			case msg_exit:
 				finish();
 				break;
-			case msg_showTFS:
+			case msg_showFPS:
 				txt_fps.setText(msg.obj.toString());
 			default:
 				break;
