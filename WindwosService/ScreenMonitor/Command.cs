@@ -28,9 +28,9 @@ namespace ScreenMonitor
             }
             else if (command.CommandType == CommandType.MouseWheel)
             {
-                command.MouseWhell_X = (int)(10 * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
+                command.MouseWhell_X = (int)(5 * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
                 ReadIndex += 8;
-                command.MouseWhell_Y = (int)(10 * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
+                command.MouseWhell_Y = (int)(5 * float.Parse(Encoding.UTF8.GetString(objData, ReadIndex, 8).Replace("\0", "")));
                 ReadIndex += 8;
             }
             command.Message = Encoding.UTF8.GetString(objData, ReadIndex, 128).Replace("\0", "");
@@ -53,7 +53,7 @@ namespace ScreenMonitor
                     APIWrapper.Mouse_RightClick(ClickPoint.X, ClickPoint.Y);
                     break;
                 case CommandType.MouseWheel:
-                    APIWrapper.Mouse_Wheel(MouseWhell_Y*-1);
+                    APIWrapper.Mouse_Wheel(MouseWhell_Y);
                     break;
                 case CommandType.Shutdown:
                     SystemCMD("shutdown -s -t 0");
