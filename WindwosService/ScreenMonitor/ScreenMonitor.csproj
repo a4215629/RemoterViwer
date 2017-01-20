@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ScreenMonitor</RootNamespace>
     <AssemblyName>ScreenMonitor</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -89,6 +89,8 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="DataOpretor.cs" />
+    <Compile Include="DataPackageConsumer.cs" />
+    <Compile Include="DataPackageProducer.cs" />
     <Compile Include="ListenerSocket.cs" />
     <Compile Include="ScreenShotPackage.cs" />
     <Compile Include="MyClient.cs" />

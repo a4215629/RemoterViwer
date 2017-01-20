@@ -8,6 +8,7 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace ScreenMonitor
 {
@@ -17,8 +18,9 @@ namespace ScreenMonitor
         
         public TcpClient Client;
         NetworkStream ns;
-        public ScreenShotPackage Cache { get;private set; }
-        Thread sendThread = null;
+        DataPackageProducer producer = null;
+        DataPackageConsumer consumer = null;
+        BlockingCollection<ScreenShotPackage> queue = null;
         Thread receiverThread = null;
         public MyClient(TcpClient client)
         {
@@ -30,22 +32,27 @@ namespace ScreenMonitor
         void Init()
         {
             ns = Client.GetStream();
+            queue = new BlockingCollection<ScreenShotPackage>(2);
+            producer = new DataPackageProducer(queue);
+            consumer = new DataPackageConsumer(queue,ns);
             ThreadStart stR = new ThreadStart(ReadCommand);
-            ThreadStart stS = new ThreadStart(SendDate);
-            sendThread = new Thread(stS);
             receiverThread = new Thread(stR);
         }
         /// <summary>
         /// 启动交互程序
         /// </summary>
-        public void Start()
+        public async void StartAsync()
         {
-            sendThread.Start();
+            producer.Start();
             receiverThread.Start();
+            await consumer.StartAsync();
+            Stop();
         }
 
         public void Stop()
         {
+            consumer.Stop();
+            producer.Stop();
             isConnect = false;
             ns.Close();
             Client.Client.Close();
@@ -80,65 +87,6 @@ namespace ScreenMonitor
 
                 }
                 Thread.Sleep(100);
-
-            }
-        }
-        void SendDate()
-        {
-            while (isConnect)
-            {
-                try
-                {
-                    Stopwatch tolwatch = new Stopwatch(); tolwatch.Start();
-                    Stopwatch watch = new Stopwatch(); watch.Start();
-                    var screenShot = ScreenShot.CurenntScreenShort;
-                    if (Cache!= null && Cache.ScreenShot.Equals(screenShot))
-                    {
-                        Thread.Sleep(5);
-                        continue;
-                    }
-                    //watch.Stop(); Console.WriteLine("获取截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
-                    ScreenShotPackage spakage = new ScreenShotPackage(screenShot, 1280);
-                    //watch.Stop(); Console.WriteLine("压缩截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
-                    byte[] data = null;
-                    if (Cache != null)
-                    {
-                        spakage.InitializeSplitting(16, 9);
-                        //watch.Stop(); Console.WriteLine("分块截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
-                        spakage.CompressByBasePackage(Cache);
-                        //watch.Stop(); Console.WriteLine("压缩数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
-                    }
-                    data = spakage.GetBytes();
-                    //watch.Stop(); Console.WriteLine("合成数据包: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
-                    writeToNet(data, data.Length, ns);
-                    //watch.Stop(); Console.WriteLine("发送数据包: " + watch.ElapsedMilliseconds);
-                    this.Cache = spakage;
-                    //tolwatch.Stop(); Console.WriteLine("总共: " + tolwatch.ElapsedMilliseconds);
-                    //Console.WriteLine("");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
-                    if (isConnect)
-                    {
-                        Stop();
-                    }
-                    return;
-                }
-                Thread.Sleep(10);
-            }
-        }
-        static void writeToNet(byte[] buffer, int count, NetworkStream ns)
-        {
-            int writeCount = 10240;
-            int indext = 0;
-            while (indext < count)
-            {
-                int thisWriteLength = (count - indext) > writeCount ? writeCount : count - indext;
-                ns.Write(buffer, indext, thisWriteLength);
-                indext += thisWriteLength;
-                ns.Flush();
             }
         }
     }

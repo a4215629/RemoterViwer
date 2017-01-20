@@ -54,7 +54,7 @@ namespace ScreenMonitor
                     myClinets.Add(myClient);
                     ScreenShot.StartShot();
                     myClient.OnStoped += ((obj) => {myClinets.Remove(obj); if (myClinets.Count == 0) ScreenShot.StopShot(); });
-                    myClient.Start();
+                    myClient.StartAsync();
                 }
                 catch (Exception e)
                 {
