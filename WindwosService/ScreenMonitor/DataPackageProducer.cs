@@ -12,6 +12,7 @@ namespace ScreenMonitor
     {
         BlockingCollection<ScreenShotPackage> queue = null;
         CancellationTokenSource tokenSource = null;
+        Task mainTask = null;
 
         public DataPackageProducer(BlockingCollection<ScreenShotPackage> queue)
         {
@@ -21,13 +22,16 @@ namespace ScreenMonitor
         }
         public void Start()
         {
+            if (tokenSource?.IsCancellationRequested == false)
+                return;
             tokenSource = new CancellationTokenSource();
-            Task.Factory.StartNew(() =>
+            mainTask = Task.Factory.StartNew(() =>
             {
                 ScreenShotPackage cache = null;
                 while (true)
                 {
-                    tokenSource.Token.ThrowIfCancellationRequested();
+                    if (tokenSource.IsCancellationRequested)
+                        return;
                     var package = CollectData(cache);
                     if (package == null)
                     {
@@ -45,7 +49,10 @@ namespace ScreenMonitor
 
         public void Stop()
         {
+            if (tokenSource == null)
+                return;
             tokenSource.Cancel();
+            Task.WaitAll(mainTask);
         }
 
         private ScreenShotPackage CollectData(ScreenShotPackage cache)

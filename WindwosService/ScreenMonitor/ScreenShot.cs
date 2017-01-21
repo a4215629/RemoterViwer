@@ -9,6 +9,7 @@ using System.IO.Compression;
 using ScreenMonitor.Tools;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ScreenMonitor
 {
@@ -17,7 +18,8 @@ namespace ScreenMonitor
         #region 获取系统截图
         static Bitmap cache;
         static DateTime imgTime = new DateTime(1, 1, 1);
-        static bool run = false;
+        static CancellationTokenSource tokenSource = null;
+        static Task mainTask = null;
         const int flushTime = 35;
         static int count = 0;
         static object lockObj = new object();
@@ -30,7 +32,6 @@ namespace ScreenMonitor
             {
                 lock (lockObj)
                 {
-                    
                     if (cache == null)
                     {
                         if (count++ % 30 == 0)
@@ -46,7 +47,6 @@ namespace ScreenMonitor
 
                     }
                     return new ScreenShot((Bitmap)cache.Clone(),cache.GetHashCode());
-
                 }
             }
         }
@@ -71,16 +71,16 @@ namespace ScreenMonitor
             this.bitmap = bitmap;
             this.hashCode = hashCode;
         }
-
-
         public static void StartShot() {
-            if (run)
+            if (tokenSource?.IsCancellationRequested == false)
                 return;
-            run = true;
-            Thread shotThread = new Thread(() =>
+            tokenSource = new CancellationTokenSource();
+            mainTask = Task.Factory.StartNew(() =>
             {
-                while (run)
+                while (true)
                 {
+                    if (tokenSource.IsCancellationRequested)
+                        return;
                     if (DateTime.Now > imgTime.AddMilliseconds(flushTime))
                     {
                         try
@@ -97,12 +97,13 @@ namespace ScreenMonitor
                         Thread.Sleep(5);
                 }
             });
-            shotThread.Start();
         }
-
         public static void StopShot()
         {
-            run = false;
+            if (tokenSource == null)
+                return;
+            tokenSource.Cancel();
+            Task.WaitAll(mainTask);
         }
         public override bool Equals(object obj)
         {

@@ -16,6 +16,7 @@ namespace ScreenMonitor
         BlockingCollection<ScreenShotPackage> queue = null;
         CancellationTokenSource tokenSource = null;
         NetworkStream ns = null;
+        Task task = null;
 
         public DataPackageConsumer(BlockingCollection<ScreenShotPackage> queue, NetworkStream ns)
         {
@@ -34,7 +35,8 @@ namespace ScreenMonitor
                 {
                     try
                     {
-                        tokenSource.Token.ThrowIfCancellationRequested();
+                        if (tokenSource.IsCancellationRequested)
+                            return;
                         ScreenShotPackage package = null;
                         if (queue.TryTake(out package))
                         {
@@ -53,9 +55,11 @@ namespace ScreenMonitor
 
         }
 
-        public void Stop()
+        public async Task StopAsync()
         {
             tokenSource.Cancel();
+            if (task != null)
+                await task;
         }
 
         static void writeToNet(byte[] buffer, int count, NetworkStream ns)

@@ -17,8 +17,7 @@ namespace ScreenMonitor
       
         static void Main()
         {
-            ScreenService screenService = new ScreenService();
-            screenService.Start();
+            ScreenMonitorService.Start();
         }
 
     }

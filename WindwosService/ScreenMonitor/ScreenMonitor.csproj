@@ -88,17 +88,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="CommandReder.cs" />
     <Compile Include="DataOpretor.cs" />
     <Compile Include="DataPackageConsumer.cs" />
     <Compile Include="DataPackageProducer.cs" />
-    <Compile Include="ListenerSocket.cs" />
     <Compile Include="ScreenShotPackage.cs" />
     <Compile Include="MyClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PortService.cs" />
     <Compile Include="ScreenShot.cs" />
-    <Compile Include="ScreenService.cs" />
+    <Compile Include="ScreenMonitorService.cs" />
     <Compile Include="Tools\DxHelper.cs" />
     <Compile Include="Tools\WindowsAPI.cs" />
     <Compile Include="Tools\APIWrapper.cs" />

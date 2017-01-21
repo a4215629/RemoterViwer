@@ -13,15 +13,15 @@ using System.Collections.Concurrent;
 namespace ScreenMonitor
 {
     class MyClient
-    {
-        bool isConnect=true;
-        
+    {   
         public TcpClient Client;
         NetworkStream ns;
         DataPackageProducer producer = null;
         DataPackageConsumer consumer = null;
+        CommandReder cmdReader = null;
         BlockingCollection<ScreenShotPackage> queue = null;
-        Thread receiverThread = null;
+        bool stoping = false;
+
         public MyClient(TcpClient client)
         {
             this.Client = client;
@@ -32,11 +32,10 @@ namespace ScreenMonitor
         void Init()
         {
             ns = Client.GetStream();
-            queue = new BlockingCollection<ScreenShotPackage>(2);
+            queue = new BlockingCollection<ScreenShotPackage>(1);
             producer = new DataPackageProducer(queue);
             consumer = new DataPackageConsumer(queue,ns);
-            ThreadStart stR = new ThreadStart(ReadCommand);
-            receiverThread = new Thread(stR);
+            cmdReader = new CommandReder(ns);
         }
         /// <summary>
         /// 启动交互程序
@@ -44,50 +43,24 @@ namespace ScreenMonitor
         public async void StartAsync()
         {
             producer.Start();
-            receiverThread.Start();
+            cmdReader.Start();
             await consumer.StartAsync();
-            Stop();
+            if(!stoping)
+                StopAsync();
         }
 
-        public void Stop()
+        public async void StopAsync()
         {
-            consumer.Stop();
+            stoping = true;
+            await consumer.StopAsync();
             producer.Stop();
-            isConnect = false;
+            cmdReader.Stop();
             ns.Close();
             Client.Client.Close();
             if (OnStoped != null)
                 OnStoped(this);
         }
 
-        void ReadCommand()
-        {
-            while (isConnect)
-            {
-                try
-                {
-                    byte[] buffer = new byte[256];
-                    int readLength = 0;
-                    if (ns.CanRead)
-                    {
-                        readLength += ns.Read(buffer, readLength, buffer.Length);
-                    }
-                    
-                    if (readLength == buffer.Length)
-                        DataOpretor.sys_Operate(buffer);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    if(isConnect)
-                    {
-                        Stop();
-                    }
-                    return;
 
-                }
-                Thread.Sleep(100);
-            }
-        }
     }
 }
