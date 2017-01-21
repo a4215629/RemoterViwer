@@ -53,7 +53,7 @@ namespace ScreenMonitor
                     APIWrapper.Mouse_RightClick(ClickPoint.X, ClickPoint.Y);
                     break;
                 case CommandType.MouseWheel:
-                    APIWrapper.Mouse_Wheel(MouseWhell_Y);
+                    APIWrapper.Mouse_Wheel(MouseWhell_Y * -1);
                     break;
                 case CommandType.Shutdown:
                     SystemCMD("shutdown -s -t 0");
