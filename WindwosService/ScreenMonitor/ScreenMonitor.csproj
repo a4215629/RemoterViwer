@@ -90,8 +90,8 @@
     <Compile Include="Command.cs" />
     <Compile Include="CommandReder.cs" />
     <Compile Include="DataOpretor.cs" />
-    <Compile Include="DataPackageConsumer.cs" />
-    <Compile Include="DataPackageProducer.cs" />
+    <Compile Include="DataConsumer.cs" />
+    <Compile Include="DataProducer.cs" />
     <Compile Include="ScreenShotPackage.cs" />
     <Compile Include="MyClient.cs" />
     <Compile Include="Program.cs" />

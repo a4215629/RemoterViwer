@@ -16,10 +16,10 @@ namespace ScreenMonitor
     {   
         public TcpClient Client;
         NetworkStream ns;
-        DataPackageProducer producer = null;
-        DataPackageConsumer consumer = null;
+        DataProducer producer = null;
+        DataConsumer consumer = null;
         CommandReder cmdReader = null;
-        BlockingCollection<ScreenShotPackage> queue = null;
+        BlockingCollection<byte[]> queue = null;
         bool stoping = false;
 
         public MyClient(TcpClient client)
@@ -32,9 +32,9 @@ namespace ScreenMonitor
         void Init()
         {
             ns = Client.GetStream();
-            queue = new BlockingCollection<ScreenShotPackage>(1);
-            producer = new DataPackageProducer(queue);
-            consumer = new DataPackageConsumer(queue,ns);
+            queue = new BlockingCollection<byte[]>(1);
+            producer = new DataProducer(queue);
+            consumer = new DataConsumer(queue,ns);
             cmdReader = new CommandReder(ns);
         }
         /// <summary>

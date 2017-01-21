@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace ScreenMonitor
 {
-    class DataPackageConsumer
+    class DataConsumer
     {
-        BlockingCollection<ScreenShotPackage> queue = null;
+        BlockingCollection<byte[]> queue = null;
         CancellationTokenSource tokenSource = null;
         NetworkStream ns = null;
         Task task = null;
 
-        public DataPackageConsumer(BlockingCollection<ScreenShotPackage> queue, NetworkStream ns)
+        public DataConsumer(BlockingCollection<byte[]> queue, NetworkStream ns)
         {
             if (queue == null || ns == null)
                 throw new NullReferenceException();
@@ -37,11 +37,10 @@ namespace ScreenMonitor
                     {
                         if (tokenSource.IsCancellationRequested)
                             return;
-                        ScreenShotPackage package = null;
-                        if (queue.TryTake(out package))
+                        byte[] networkData = null;
+                        if (queue.TryTake(out networkData))
                         {
-                            var data = package.GetBytes();
-                            writeToNet(data, data.Length, ns);
+                            writeToNet(networkData, networkData.Length, ns);
                         }
                         else
                             Thread.Sleep(10);

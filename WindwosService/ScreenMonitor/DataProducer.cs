@@ -8,13 +8,13 @@ using System.Threading;
 
 namespace ScreenMonitor
 {
-    class DataPackageProducer
+    class DataProducer
     {
-        BlockingCollection<ScreenShotPackage> queue = null;
+        BlockingCollection<byte[]> queue = null;
         CancellationTokenSource tokenSource = null;
         Task mainTask = null;
 
-        public DataPackageProducer(BlockingCollection<ScreenShotPackage> queue)
+        public DataProducer(BlockingCollection<byte[]> queue)
         {
             if (queue == null)
                 throw new NullReferenceException();
@@ -38,7 +38,7 @@ namespace ScreenMonitor
                         Thread.Sleep(5);
                         continue;
                     }
-                    if(queue.TryAdd(package))
+                    if(queue.TryAdd(package.GetBytes()))
                         cache = package;
                     else
                         Thread.Sleep(10);
