@@ -32,7 +32,7 @@ namespace ScreenMonitor
         void Init()
         {
             ns = Client.GetStream();
-            queue = new BlockingCollection<byte[]>(1);
+            queue = new BlockingCollection<byte[]>(2);
             producer = new DataProducer(queue);
             consumer = new DataConsumer(queue,ns);
             cmdReader = new CommandReder(ns);

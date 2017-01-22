@@ -50,7 +50,7 @@ namespace ScreenMonitor
                         return;
                     }
                 }
-            }, tokenSource.Token);
+            }, tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
         }
 

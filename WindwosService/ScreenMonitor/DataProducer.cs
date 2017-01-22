@@ -43,7 +43,7 @@ namespace ScreenMonitor
                     else
                         Thread.Sleep(10);
                 }
-            },tokenSource.Token);
+            }, tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
         }
 
@@ -69,7 +69,7 @@ namespace ScreenMonitor
             //watch.Stop(); Console.WriteLine("压缩截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
             if (cache != null)
             {
-                spakage.InitializeSplitting(16, 9);
+                spakage.InitializeSplitting(14, 7);
                 //watch.Stop(); Console.WriteLine("分块截图: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();
                 spakage.CompressByBasePackage(cache);
                 //watch.Stop(); Console.WriteLine("压缩数据: " + watch.ElapsedMilliseconds); watch.Reset(); watch.Start();

@@ -20,7 +20,7 @@ namespace ScreenMonitor
         static DateTime imgTime = new DateTime(1, 1, 1);
         static CancellationTokenSource tokenSource = null;
         static Task mainTask = null;
-        const int flushTime = 35;
+        const int flushTime = 38;
         static int count = 0;
         static object lockObj = new object();
         public Bitmap bitmap { get;private set; }
@@ -96,7 +96,7 @@ namespace ScreenMonitor
                     else
                         Thread.Sleep(5);
                 }
-            });
+            }, tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
         public static void StopShot()
         {
