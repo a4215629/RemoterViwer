@@ -56,7 +56,7 @@ namespace ScreenMonitor
                     APIWrapper.Mouse_Wheel(MouseWhell_Y);
                     break;
                 case CommandType.Shutdown:
-                    SystemCMD("shutdown -s -t 0");
+                    SystemCMD("shutdown -s -t 3");
                     break;
                 case CommandType.Message:
                     MessageBox.Show(Message);
