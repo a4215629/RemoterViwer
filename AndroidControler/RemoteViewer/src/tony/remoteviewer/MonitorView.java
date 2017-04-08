@@ -173,6 +173,8 @@ public class MonitorView extends Activity {
 		case MotionEvent.ACTION_MOVE:
 			moveIndexX = x - lastTouchDownX;
 			moveIndexY = y - lastTouchDownY;
+			if(moveIndexX <=1 && moveIndexY<=1)
+				break;
 			if(lastTouchDoneTime !=null && new Date().getTime()-lastTouchDoneTime.getTime() > 200)
 			{
 				new WriteThread("MouseWheel", moveIndexX , moveIndexY ).start();
