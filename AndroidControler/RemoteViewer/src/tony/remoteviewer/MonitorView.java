@@ -318,7 +318,7 @@ public class MonitorView extends Activity {
 				lastReceivedFrames = cureentReceivedFrames;
 				Message msg = Message.obtain();
 				msg.what = msg_showFPS;
-				msg.obj = "RFPS:"+rfPs+" RFPS:"+fps;
+				msg.obj = "RFPS:"+rfPs+" FPS:"+fps;
 				handler.sendMessage(msg);
 				try {
 					Thread.sleep(1000);
