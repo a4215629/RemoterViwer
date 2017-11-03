@@ -173,7 +173,7 @@ public class MonitorView extends Activity {
 		case MotionEvent.ACTION_MOVE:
 			moveIndexX = x - lastTouchDownX;
 			moveIndexY = y - lastTouchDownY;
-			if(moveIndexX <=1 && moveIndexY<=1)
+			if(Math.abs(moveIndexX) <=20 && Math.abs(moveIndexY)<=20)
 				break;
 			if(lastTouchDoneTime !=null && new Date().getTime()-lastTouchDoneTime.getTime() > 200)
 			{
